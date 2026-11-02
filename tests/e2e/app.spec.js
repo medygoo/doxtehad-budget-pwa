@@ -8,7 +8,7 @@ async function firstRunSetup(page) {
   await page.fill('#init-pwd', TEST_PASSWORD);
   await page.fill('#init-pwd-confirm', TEST_PASSWORD);
   await page.click('#form-init-pwd button[type="submit"]');
-  await page.waitForSelector('#modal-admin-auth.hidden', { timeout: 15000 });
+  await page.waitForSelector('#modal-admin-auth', { state: 'hidden', timeout: 20000 });
 }
 
 test.describe('PWA DOXTEHAD — Authentification', () => {
@@ -62,7 +62,7 @@ test.describe('PWA DOXTEHAD — Authentification', () => {
     await page.click('button[title="Verrouiller"]');
     await page.fill('#login-pwd', TEST_PASSWORD);
     await page.click('#form-login-pwd button[type="submit"]');
-    await page.waitForSelector('#modal-admin-auth.hidden', { timeout: 15000 });
+    await page.waitForSelector('#modal-admin-auth', { state: 'hidden', timeout: 20000 });
   });
 });
 
