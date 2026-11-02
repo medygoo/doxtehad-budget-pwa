@@ -101,7 +101,10 @@ window.addEventListener('DOMContentLoaded', async () => {
   // 6. Initialiser l'authentification Supabase
   initializeAuth();
 
-  // 7. Si authentifié, faire le rendu complet
+  // 7. Renforcer les boutons afficher/masquer mot de passe (mobile + robustesse)
+  enhancePasswordToggleButtons();
+
+  // 8. Si authentifié, faire le rendu complet
   if (isAuthenticated && currentUserId) {
     await syncDataFromCloud();
     renderAll();
@@ -1566,6 +1569,38 @@ function togglePasswordVisibility(inputId, btnId) {
     );
     btn.setAttribute('title', isHidden ? 'Masquer' : 'Afficher');
   }
+}
+
+/**
+ * Renforce les boutons afficher/masquer : zone tactile élargie + addEventListener
+ * pour éviter tout problème de propagation sur mobile.
+ */
+function enhancePasswordToggleButtons() {
+  document.querySelectorAll('button[id^="btn-toggle-"]').forEach((btn) => {
+    if (btn.dataset.enhanced === 'true') return;
+    btn.dataset.enhanced = 'true';
+
+    // Extraire les arguments depuis l'onclick inline existant
+    const onclickAttr = btn.getAttribute('onclick') || '';
+    const match = onclickAttr.match(/togglePasswordVisibility\(\s*'([^']+)'\s*,\s*'([^']+)'/);
+    if (!match) return;
+
+    const [, inputId, targetBtnId] = match;
+
+    // Retirer l'ancien onclick pour éviter double exécution
+    btn.removeAttribute('onclick');
+
+    // Nouveau listener robuste (capture phase pour être sûr d'intercepter)
+    btn.addEventListener(
+      'click',
+      (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        togglePasswordVisibility(inputId, targetBtnId);
+      },
+      true
+    );
+  });
 }
 
 const ICON_EYE = `
