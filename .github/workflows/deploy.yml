@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - develop
   workflow_dispatch:
 
 jobs:
@@ -34,9 +33,15 @@ jobs:
       - name: Unit tests
         run: npm test
 
+      - name: Prepare static bundle
+        run: |
+          mkdir -p dist
+          cp index.html manifest.json sw.js offline.html dist/
+          cp -r css js icons dist/
+
       - name: Deploy to Cloudflare Pages
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy . --project-name=doxtehad-budget-pwa --branch=${{ github.ref_name }}
+          command: pages deploy dist --project-name=doxtehad-budget-pwa --branch=${{ github.ref_name }}
