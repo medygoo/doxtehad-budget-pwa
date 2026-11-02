@@ -127,11 +127,11 @@ Voir `docs/ARCHITECTURE.md` pour détails.
 
 ## 🧪 Tests
 
-| Type       | Outil       | Commande          | Couverture |
-|------------|-------------|-------------------|------------|
-| Unit       | Vitest      | `npm test`        | 23 tests   |
-| E2E        | Playwright  | `npm run test:e2e`| À compléter|
-| Lint       | ESLint      | `npm run lint`    | 0 erreur   |
+| Type | Outil      | Commande           | Couverture  |
+| ---- | ---------- | ------------------ | ----------- |
+| Unit | Vitest     | `npm test`         | 23 tests    |
+| E2E  | Playwright | `npm run test:e2e` | À compléter |
+| Lint | ESLint     | `npm run lint`     | 0 erreur    |
 
 ---
 
@@ -211,6 +211,7 @@ MIT © 2026 DOXTEHAD
 ## 🛠️ Roadmap
 
 ### Phase 1 — MVP (actuel)
+
 - ✅ PWA offline-first
 - ✅ Chiffrement local
 - ✅ Tests unitaires
@@ -218,12 +219,14 @@ MIT © 2026 DOXTEHAD
 - ⏳ Déploiement Cloudflare
 
 ### Phase 2 — Multi-utilisateurs (v2.0)
+
 - 🔄 Synchronisation temps réel (Supabase Realtime)
 - 🔄 Gestion de conflits (CRDT)
 - 🔄 Export CSV/PDF
 - 🔄 Notifications push
 
 ### Phase 3 — Intelligence (v3.0)
+
 - 📅 Suggestions de budget automatiques
 - 📊 Tableaux de bord avancés
 - 🔔 Alertes budgétaires

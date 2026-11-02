@@ -25,7 +25,7 @@ const APP_SHELL = [
   './icons/icon-512.png',
   './icons/maskable-512.png',
   './icons/apple-touch-icon.png',
-  './icons/favicon.ico'
+  './icons/favicon.ico',
 ];
 
 // ============================================================
@@ -34,7 +34,8 @@ const APP_SHELL = [
 self.addEventListener('install', (event) => {
   console.log('[SW] Install â€” version', CACHE_VERSION);
   event.waitUntil(
-    caches.open(CACHE_STATIC)
+    caches
+      .open(CACHE_STATIC)
       .then((cache) => {
         // addAll Ã©choue si UNE ressource Ã©choue â†’ on ajoute individuellement
         return Promise.allSettled(
@@ -55,7 +56,8 @@ self.addEventListener('install', (event) => {
 self.addEventListener('activate', (event) => {
   console.log('[SW] Activate â€” nettoyage anciens caches');
   event.waitUntil(
-    caches.keys()
+    caches
+      .keys()
       .then((keys) =>
         Promise.all(
           keys
@@ -103,7 +105,8 @@ self.addEventListener('fetch', (event) => {
         })
         .catch(() => {
           // Hors-ligne : servir la page depuis le cache
-          return caches.match(request)
+          return caches
+            .match(request)
             .then((cached) => cached || caches.match('./offline.html') || caches.match('./offline'))
             .then((fallback) => fallback || new Response('Hors-ligne', { status: 503 }));
         })
@@ -114,7 +117,8 @@ self.addEventListener('fetch', (event) => {
   // Ressources same-origin (CSS/JS/icÃ´nes) â†’ cache-first
   if (url.origin === self.location.origin) {
     event.respondWith(
-      caches.match(request)
+      caches
+        .match(request)
         .then((cached) => {
           if (cached) return cached;
           return fetch(request).then((response) => {
@@ -159,9 +163,7 @@ self.addEventListener('message', (event) => {
   }
   if (event.data && event.data.type === 'CLEAR_CACHE') {
     event.waitUntil(
-      caches.keys().then((keys) =>
-        Promise.all(keys.map((key) => caches.delete(key)))
-      )
+      caches.keys().then((keys) => Promise.all(keys.map((key) => caches.delete(key))))
     );
   }
 });

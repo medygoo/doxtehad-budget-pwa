@@ -12,7 +12,7 @@ async function firstRunSetup(page) {
 }
 
 test.describe('PWA DOXTEHAD — Authentification', () => {
-  test('premier lancement affiche le formulaire d\'initialisation', async ({ page }) => {
+  test("premier lancement affiche le formulaire d'initialisation", async ({ page }) => {
     await page.goto('/');
     await expect(page.locator('#form-init-pwd')).toBeVisible();
     await expect(page.locator('#form-login-pwd')).toBeHidden();
@@ -37,7 +37,7 @@ test.describe('PWA DOXTEHAD — Authentification', () => {
     await expect(page.locator('#modal-admin-auth')).toBeVisible();
   });
 
-  test('crée le mot de passe et déverrouille l\'application', async ({ page }) => {
+  test("crée le mot de passe et déverrouille l'application", async ({ page }) => {
     await firstRunSetup(page);
     await expect(page.locator('#modal-admin-auth')).toBeHidden();
     await expect(page.locator('#page-dashboard')).toBeVisible();
@@ -84,7 +84,7 @@ test.describe('PWA DOXTEHAD — Opérations', () => {
     await expect(page.locator('#kpi-revenus')).toContainText('500');
   });
 
-  test('crée une dépense et l\'affiche dans le tableau', async ({ page }) => {
+  test("crée une dépense et l'affiche dans le tableau", async ({ page }) => {
     await page.click('button:has-text("+ Nouvelle")');
     await page.selectOption('#op-type', 'Dépense');
     await page.fill('#op-category', 'Loyer');
@@ -131,7 +131,7 @@ test.describe('PWA DOXTEHAD — Règle 75/15/10', () => {
     await expect(page.locator('#val-min-epargne')).toContainText('100');
   });
 
-  test('affiche l\'alerte si dépenses dépassent 75%', async ({ page }) => {
+  test("affiche l'alerte si dépenses dépassent 75%", async ({ page }) => {
     await page.click('button:has-text("+ Nouvelle")');
     await page.selectOption('#op-type', 'Revenu');
     await page.fill('#op-category', 'Salaire');
@@ -158,7 +158,7 @@ test.describe('PWA DOXTEHAD — Projets SMART', () => {
 
   test('crée un projet et affiche la carte', async ({ page }) => {
     await page.click('button:has-text("+ Nouveau Projet SMART")');
-    await page.fill('#proj-title-input', 'Fonds d\'urgence');
+    await page.fill('#proj-title-input', "Fonds d'urgence");
     await page.selectOption('#proj-category', 'Réserve');
     await page.selectOption('#proj-priority', 'Haute');
     await page.fill('#proj-target', '5000');
@@ -166,7 +166,7 @@ test.describe('PWA DOXTEHAD — Projets SMART', () => {
     await page.fill('#proj-deadline', '2027-06-01');
     await page.click('#form-project button[type="submit"]');
 
-    await expect(page.locator('#projects-grid')).toContainText('Fonds d\'urgence');
+    await expect(page.locator('#projects-grid')).toContainText("Fonds d'urgence");
   });
 
   test('plafonne une contribution au reste à financer', async ({ page }) => {
@@ -227,7 +227,7 @@ test.describe('PWA DOXTEHAD — PWA & Offline', () => {
 });
 
 test.describe('PWA DOXTEHAD — Responsive', () => {
-  test('s\'affiche correctement sur mobile', async ({ page }) => {
+  test("s'affiche correctement sur mobile", async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 667 });
     await firstRunSetup(page);
     await expect(page.locator('#page-dashboard')).toBeVisible();
@@ -238,7 +238,7 @@ test.describe('PWA DOXTEHAD — Responsive', () => {
     expect(hasHorizontalScroll).toBe(false);
   });
 
-  test('s\'affiche correctement sur tablette', async ({ page }) => {
+  test("s'affiche correctement sur tablette", async ({ page }) => {
     await page.setViewportSize({ width: 768, height: 1024 });
     await firstRunSetup(page);
     await expect(page.locator('#page-dashboard')).toBeVisible();

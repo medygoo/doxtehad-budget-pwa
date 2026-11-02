@@ -12,12 +12,23 @@ describe('DoxtehadStorage — validation import JSON', () => {
 
   beforeEach(() => {
     const fakeWindow = {};
-    const fn = new Function('window', 'localStorage', 'console', storageSrc + '\nreturn window.DoxtehadStorage;');
+    const fn = new Function(
+      'window',
+      'localStorage',
+      'console',
+      storageSrc + '\nreturn window.DoxtehadStorage;'
+    );
     const fakeLocalStorage = {
       _data: {},
-      getItem(k) { return this._data[k] ?? null; },
-      setItem(k, v) { this._data[k] = v; },
-      removeItem(k) { delete this._data[k]; },
+      getItem(k) {
+        return this._data[k] ?? null;
+      },
+      setItem(k, v) {
+        this._data[k] = v;
+      },
+      removeItem(k) {
+        delete this._data[k];
+      },
     };
     DoxtehadStorage = fn(fakeWindow, fakeLocalStorage, console);
   });
@@ -34,7 +45,7 @@ describe('DoxtehadStorage — validation import JSON', () => {
     expect(r.errors.join(' ')).toMatch(/operations/);
   });
 
-  it('rejette un type d\'opération inconnu', () => {
+  it("rejette un type d'opération inconnu", () => {
     const r = DoxtehadStorage.validateImportedState({
       operations: [{ id: 'a', type: 'Hack', amount: 10, date: '2026-01-01' }],
       projects: [],
@@ -60,7 +71,9 @@ describe('DoxtehadStorage — validation import JSON', () => {
 
   it('accepte un état valide', () => {
     const r = DoxtehadStorage.validateImportedState({
-      operations: [{ id: 'a', type: 'Revenu', category: 'Salaire', amount: 100, date: '2026-01-01' }],
+      operations: [
+        { id: 'a', type: 'Revenu', category: 'Salaire', amount: 100, date: '2026-01-01' },
+      ],
       projects: [{ id: 'p', title: 'Projet', target: 1000, saved: 0, deadline: '2026-12-01' }],
     });
     expect(r.valid).toBe(true);
@@ -94,7 +107,13 @@ describe('DoxtehadStorage — validation import JSON', () => {
 
   it('exportOperationsCSV produit un BOM UTF-8 et un en-tête', () => {
     const csv = DoxtehadStorage.exportOperationsCSV([
-      { date: '2026-01-01', type: 'Revenu', category: 'Salaire', description: 'Janvier', amount: 500 },
+      {
+        date: '2026-01-01',
+        type: 'Revenu',
+        category: 'Salaire',
+        description: 'Janvier',
+        amount: 500,
+      },
     ]);
     expect(csv.charCodeAt(0)).toBe(0xfeff);
     expect(csv).toContain('Date;Type;Catégorie;Description;Montant');
@@ -116,13 +135,30 @@ describe('DoxtehadCrypto — hash et vérification', () => {
     const fakeWindow = {};
     const fakeLocalStorage = {
       _data: {},
-      getItem(k) { return this._data[k] ?? null; },
-      setItem(k, v) { this._data[k] = v; },
-      removeItem(k) { delete this._data[k]; },
+      getItem(k) {
+        return this._data[k] ?? null;
+      },
+      setItem(k, v) {
+        this._data[k] = v;
+      },
+      removeItem(k) {
+        delete this._data[k];
+      },
     };
+
+    // crypto.js est désormais un module ES : on convertit l'export default en global
+    // pour conserver la mécanique d'injection du test.
+    const wrappedSrc = cryptoSrc.replace(
+      /export\s+default\s+\{/,
+      'window.DoxtehadCrypto = {'
+    );
     const fn = new Function(
-      'window', 'localStorage', 'crypto', 'TextEncoder', 'console',
-      cryptoSrc + '\nreturn window.DoxtehadCrypto;'
+      'window',
+      'localStorage',
+      'crypto',
+      'TextEncoder',
+      'console',
+      wrappedSrc + '\nreturn window.DoxtehadCrypto;'
     );
     DoxtehadCrypto = fn(
       fakeWindow,
@@ -142,7 +178,7 @@ describe('DoxtehadCrypto — hash et vérification', () => {
     expect(DoxtehadCrypto.isLegacyHash('pbkdf2$100000$aa$bb')).toBe(false);
   });
 
-  it('legacyHash reproduit l\'algorithme original', () => {
+  it("legacyHash reproduit l'algorithme original", () => {
     // Valeur vérifiée par exécution de l'algorithme original
     const h = DoxtehadCrypto.legacyHash('test');
     expect(h).toBe('3556498');

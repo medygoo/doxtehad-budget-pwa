@@ -24,3 +24,8 @@ Thumbs.db
 
 live-*.png
 preview-*.png
+
+# Scripts utilitaires de test local
+
+local-server.cjs
+create-test-user.cjs

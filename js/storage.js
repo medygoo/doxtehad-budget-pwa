@@ -31,9 +31,9 @@
         budgetRules: {
           depensesMax: 75,
           projetsMax: 15,
-          epargneMin: 10
-        }
-      }
+          epargneMin: 10,
+        },
+      },
     };
   }
 
@@ -102,7 +102,7 @@
         return {
           success: false,
           error: 'quota_exceeded',
-          message: 'Stockage local plein. Exportez vos données et réinitialisez.'
+          message: 'Stockage local plein. Exportez vos données et réinitialisez.',
         };
       }
       console.error('[Storage] Erreur écriture localStorage:', err);
@@ -166,17 +166,21 @@
     return {
       valid: errors.length === 0,
       errors,
-      warnings: generateWarnings(data)
+      warnings: generateWarnings(data),
     };
   }
 
   function generateWarnings(data) {
     const warnings = [];
     if (data.adminPasswordHash) {
-      warnings.push('Ce fichier contient le hash du mot de passe administrateur. Gardez-le confidentiel.');
+      warnings.push(
+        'Ce fichier contient le hash du mot de passe administrateur. Gardez-le confidentiel.'
+      );
     }
     if (data.operations && data.operations.length > 5000) {
-      warnings.push(`Ce fichier contient ${data.operations.length} opérations — chargement peut être lent.`);
+      warnings.push(
+        `Ce fichier contient ${data.operations.length} opérations — chargement peut être lent.`
+      );
     }
     return warnings;
   }
@@ -191,7 +195,7 @@
       _app: 'DOXTEHAD Budget v2.0',
       operations: state.operations,
       projects: state.projects,
-      settings: state.settings
+      settings: state.settings,
     };
 
     if (includeSecurity) {
@@ -215,7 +219,7 @@
         op.type,
         '"' + (op.category || '').replace(/"/g, '""') + '"',
         '"' + (op.description || '').replace(/"/g, '""') + '"',
-        op.type === 'Revenu' ? op.amount : -op.amount
+        op.type === 'Revenu' ? op.amount : -op.amount,
       ]);
 
     const csv = [headers.join(';'), ...rows.map((r) => r.join(';'))].join('\n');
@@ -232,6 +236,6 @@
     exportToJSON,
     exportOperationsCSV,
     defaultState,
-    DATA_VERSION
+    DATA_VERSION,
   };
 })(window);

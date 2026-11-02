@@ -2,7 +2,7 @@ export default [
   {
     languageOptions: {
       ecmaVersion: 2022,
-      sourceType: 'script',
+      sourceType: 'module',
       globals: {
         // Browser globals
         window: 'readonly',
@@ -36,8 +36,8 @@ export default [
         // Custom globals
         DoxtehadCrypto: 'writable',
         DoxtehadStorage: 'writable',
-        DoxtehadApp: 'writable'
-      }
+        DoxtehadApp: 'writable',
+      },
     },
     files: ['js/**/*.js'],
     ignores: ['node_modules/**', 'tests/**'],
@@ -48,11 +48,11 @@ export default [
       'no-debugger': 'warn',
       'prefer-const': 'warn',
       'no-var': 'error',
-      'eqeqeq': ['error', 'always', { null: 'ignore' }],
-      'curly': 'off',
-      'semi': ['error', 'always'],
-      'quotes': ['warn', 'single', { avoidEscape: true, allowTemplateLiterals: true }],
-      'no-trailing-spaces': 'warn'
-    }
-  }
+      eqeqeq: ['error', 'always', { null: 'ignore' }],
+      curly: 'off',
+      semi: ['error', 'always'],
+      quotes: ['warn', 'single', { avoidEscape: true, allowTemplateLiterals: true }],
+      'no-trailing-spaces': 'warn',
+    },
+  },
 ];

@@ -1,479 +1,990 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="fr" class="h-full">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Carnet de Budget DOXTEHAD — Gestion simple de vos finances avec la règle 75/15/10">
-  <title>Carnet de Budget DOXTEHAD</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Carnet de Budget DOXTEHAD — Gestion simple de vos finances avec la règle 75/15/10"
+    />
+    <title>Carnet de Budget DOXTEHAD</title>
 
-  <!-- PWA Meta Tags -->
-  <link rel="manifest" href="./manifest.json">
-  <meta name="theme-color" content="#0A2540">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="DOXTEHAD Budget">
-  <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
-  <link rel="icon" type="image/x-icon" href="./icons/favicon.ico">
+    <!-- PWA Meta Tags -->
+    <link rel="manifest" href="./manifest.json" />
+    <meta name="theme-color" content="#0A2540" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="DOXTEHAD Budget" />
+    <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png" />
+    <link rel="icon" type="image/x-icon" href="./icons/favicon.ico" />
 
-  <!-- CSS Compiled locally (no CDN) -->
-  <link rel="stylesheet" href="./css/app.css">
-</head>
-<body class="h-full bg-slate-100">
-
-  <!-- BANNIÈRE HORS-LIGNE -->
-  <div id="offline-banner" class="fixed top-0 left-0 right-0 bg-amber-500 text-white text-xs font-bold text-center py-2 z-[9999] transform -translate-y-full transition-transform duration-300">
-    ⚠️ Mode Hors-Ligne — Vos données sont préservées localement
-  </div>
-
-  <!-- MODAL AUTHENTIFICATION ADMIN -->
-  <div id="modal-admin-auth" class="fixed inset-0 bg-slate-900/80 flex items-center justify-center z-50 hidden">
-    <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4 p-8 space-y-4">
-      <h2 id="admin-modal-heading" class="text-xl font-bold text-slate-800">Authentification</h2>
-      <p id="admin-modal-subtext" class="text-xs text-slate-500 leading-relaxed">Protection de vos données financières.</p>
-
-      <!-- Formulaire INITIALISATION -->
-      <form id="form-init-pwd" class="space-y-3 hidden" onsubmit="DoxtehadApp.handleInitPassword(event)">
-        <input id="init-pwd" type="password" placeholder="Nouveau mot de passe (min 8 car.)" required minlength="8" class="w-full p-2.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-400">
-        <input id="init-pwd-confirm" type="password" placeholder="Confirmer le mot de passe" required minlength="8" class="w-full p-2.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-400">
-        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm py-2.5 rounded-lg transition">Créer Mot de Passe</button>
-      </form>
-
-      <!-- Formulaire LOGIN -->
-      <form id="form-login-pwd" class="space-y-3 hidden" onsubmit="DoxtehadApp.handleLogin(event)">
-        <input id="login-pwd" type="password" placeholder="Entrez votre mot de passe" required class="w-full p-2.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-400">
-        <p id="login-lockout-box" class="text-xs text-rose-600 hidden font-semibold"></p>
-        <button id="btn-login-submit" type="submit" class="w-full bg-navy-800 hover:bg-navy-900 text-white font-semibold text-sm py-2.5 rounded-lg transition">Déverrouiller</button>
-      </form>
-
-      <!-- Formulaire RENOUVELLEMENT EXPIRÉ -->
-      <form id="form-expired-pwd" class="space-y-3 hidden" onsubmit="DoxtehadApp.handleExpiredPasswordChange(event)">
-        <input id="exp-old-pwd" type="password" placeholder="Mot de passe actuel" required class="w-full p-2.5 border border-slate-300 rounded-lg text-sm">
-        <input id="exp-new-pwd" type="password" placeholder="Nouveau mot de passe (8+ car.)" required minlength="8" class="w-full p-2.5 border border-slate-300 rounded-lg text-sm">
-        <input id="exp-confirm-pwd" type="password" placeholder="Confirmer" required minlength="8" class="w-full p-2.5 border border-slate-300 rounded-lg text-sm">
-        <button type="submit" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-semibold text-sm py-2.5 rounded-lg transition">Renouveler pour 6 Mois</button>
-      </form>
+    <!-- CSS Compiled locally (no CDN) -->
+    <link rel="stylesheet" href="./css/app.css" />
+  </head>
+  <body class="h-full bg-slate-100">
+    <!-- BANNIÈRE HORS-LIGNE -->
+    <div
+      id="offline-banner"
+      class="fixed top-0 left-0 right-0 bg-amber-500 text-white text-xs font-bold text-center py-2 z-[9999] transform -translate-y-full transition-transform duration-300"
+    >
+      ⚠️ Mode Hors-Ligne — Vos données sont préservées localement
     </div>
-  </div>
 
-  <!-- APPLICATION PRINCIPALE -->
-  <div class="h-full flex flex-col">
+    <!-- MODAL AUTHENTIFICATION SUPABASE -->
+    <div
+      id="modal-auth-supabase"
+      class="fixed inset-0 bg-slate-900/80 flex items-center justify-center z-50 hidden"
+    >
+      <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4 p-8 space-y-4">
+        <h2 id="auth-setup-heading" class="text-xl font-bold text-slate-800">Authentification DOXTEHAD</h2>
+        <p id="auth-setup-subtext" class="text-xs text-slate-500 leading-relaxed">
+          Connexion sécurisée par Supabase. Vos données sont chiffrées et synchronisées automatiquement.
+        </p>
 
-    <!-- HEADER AVEC BOUTON PWA -->
-    <header class="bg-navy-800 text-white shadow-xl sticky top-0 z-40">
-      <div class="max-w-screen-xl mx-auto px-4 py-3 flex items-center justify-between">
-        <div class="flex items-center space-x-3">
-          <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-700 rounded-lg flex items-center justify-center">
-            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-            </svg>
-          </div>
-          <div>
-            <h1 class="text-sm font-bold">DOXTEHAD Budget v2.0</h1>
-            <p class="text-[10px] text-slate-300">Gestion Financière Structurée</p>
-          </div>
-        </div>
-        <div class="flex items-center space-x-2">
-          <button id="btn-pwa-install" class="hidden px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-xs font-semibold rounded-lg transition">
-            📲 Installer
+        <!-- Formulaire CONNEXION -->
+        <form id="form-auth-login" class="space-y-3" onsubmit="DoxtehadApp.handleSignIn(event)">
+          <input
+            id="login-email"
+            type="email"
+            placeholder="Adresse email"
+            required
+            autocomplete="email"
+            class="w-full p-2.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-400"
+          />
+          <input
+            id="login-password"
+            type="password"
+            placeholder="Mot de passe"
+            required
+            autocomplete="current-password"
+            class="w-full p-2.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-400"
+          />
+          <button
+            type="submit"
+            class="w-full bg-navy-800 hover:bg-navy-900 text-white font-semibold text-sm py-2.5 rounded-lg transition"
+          >
+            Se connecter
           </button>
-          <button onclick="DoxtehadApp.lockApp()" class="p-2 hover:bg-navy-900 rounded-lg transition" title="Verrouiller">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-            </svg>
+          <p class="text-xs text-center text-slate-600">
+            Pas encore de compte ?
+            <a href="#" onclick="event.preventDefault(); document.getElementById('form-auth-signup').classList.remove('hidden'); document.getElementById('form-auth-login').classList.add('hidden'); return false;" class="text-blue-600 hover:underline">Créer un compte</a>
+            ·
+            <a href="#" onclick="event.preventDefault(); document.getElementById('form-auth-login').classList.add('hidden'); document.getElementById('form-auth-forgot').classList.remove('hidden'); return false;" class="text-blue-600 hover:underline">Mot de passe oublié ?</a>
+          </p>
+        </form>
+
+        <!-- Formulaire INSCRIPTION -->
+        <form id="form-auth-signup" class="space-y-3 hidden" onsubmit="DoxtehadApp.handleSignUp(event)">
+          <input
+            id="signup-email"
+            type="email"
+            placeholder="Adresse email"
+            required
+            autocomplete="email"
+            class="w-full p-2.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-400"
+          />
+          <input
+            id="signup-password"
+            type="password"
+            placeholder="Mot de passe (8+ caractères)"
+            required
+            autocomplete="new-password"
+            minlength="8"
+            class="w-full p-2.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-400"
+          />
+          <input
+            id="signup-password-confirm"
+            type="password"
+            placeholder="Confirmer le mot de passe"
+            required
+            autocomplete="new-password"
+            minlength="8"
+            class="w-full p-2.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-400"
+          />
+          <button
+            type="submit"
+            class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm py-2.5 rounded-lg transition"
+          >
+            S'inscrire
           </button>
-        </div>
+          <p class="text-xs text-center text-slate-600">
+            Déjà un compte ?
+            <a href="#" onclick="event.preventDefault(); document.getElementById('form-auth-signup').classList.add('hidden'); document.getElementById('form-auth-login').classList.remove('hidden'); return false;" class="text-blue-600 hover:underline">Se connecter</a>
+          </p>
+        </form>
+
+        <!-- Formulaire RÉINITIALISATION -->
+        <form id="form-auth-forgot" class="space-y-3 hidden" onsubmit="event.preventDefault(); DoxtehadApp.resetPassword(document.getElementById('forgot-email').value);">
+          <p class="text-xs text-slate-600">
+            Entrez votre adresse email et nous vous enverrons un lien pour réinitialiser votre mot de passe.
+          </p>
+          <input
+            id="forgot-email"
+            type="email"
+            placeholder="Adresse email"
+            required
+            autocomplete="email"
+            class="w-full p-2.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-400"
+          />
+          <button
+            type="submit"
+            class="w-full bg-amber-600 hover:bg-amber-700 text-white font-semibold text-sm py-2.5 rounded-lg transition"
+          >
+            Envoyer le lien de réinitialisation
+          </button>
+          <p class="text-xs text-center text-slate-600">
+            <a href="#" onclick="event.preventDefault(); document.getElementById('form-auth-forgot').classList.add('hidden'); document.getElementById('form-auth-login').classList.remove('hidden'); return false;" class="text-blue-600 hover:underline">Retour à la connexion</a>
+          </p>
+        </form>
+
+        <!-- Formulaire DÉVERROUILLAGE (mot de passe de chiffrement local) -->
+        <form id="form-auth-setup-pwd" class="space-y-3 hidden" onsubmit="DoxtehadApp.handleSetupPassword(event)">
+          <p class="text-xs text-slate-600">
+            Pour protéger vos données financières, créez un mot de passe de déverrouillage (chiffré localement).
+          </p>
+          <input
+            id="auth-setup-pwd"
+            type="password"
+            placeholder="Mot de passe de déverrouillage"
+            required
+            minlength="8"
+            class="w-full p-2.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-400"
+          />
+          <input
+            id="auth-setup-pwd-confirm"
+            type="password"
+            placeholder="Confirmer le mot de passe de déverrouillage"
+            required
+            minlength="8"
+            class="w-full p-2.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-400"
+          />
+          <button
+            type="submit"
+            class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm py-2.5 rounded-lg transition"
+          >
+            Créer le mot de passe
+          </button>
+          <p class="text-xs text-center text-amber-600">
+            ⚠️ Ce mot de passe est la seule clé de déchiffrement de vos données. Ne le perdez pas !
+          </p>
+        </form>
       </div>
+    </div>
 
-      <!-- TABS NAVIGATION -->
-      <nav class="max-w-screen-xl mx-auto px-4 flex space-x-1 overflow-x-auto pb-1">
-        <button id="tab-dashboard" onclick="DoxtehadApp.switchTab('dashboard')" class="tab-btn px-4 py-2 text-xs font-semibold rounded-t-lg transition bg-white text-navy-800">Tableau de Bord</button>
-        <button id="tab-operations" onclick="DoxtehadApp.switchTab('operations')" class="tab-btn px-4 py-2 text-xs font-semibold rounded-t-lg transition text-slate-300 hover:text-white hover:bg-navy-900">Opérations</button>
-        <button id="tab-projects" onclick="DoxtehadApp.switchTab('projects')" class="tab-btn px-4 py-2 text-xs font-semibold rounded-t-lg transition text-slate-300 hover:text-white hover:bg-navy-900">Projets SMART</button>
-        <button id="tab-reports" onclick="DoxtehadApp.switchTab('reports')" class="tab-btn px-4 py-2 text-xs font-semibold rounded-t-lg transition text-slate-300 hover:text-white hover:bg-navy-900">Rapports</button>
-        <button id="tab-settings" onclick="DoxtehadApp.switchTab('settings')" class="tab-btn px-4 py-2 text-xs font-semibold rounded-t-lg transition text-slate-300 hover:text-white hover:bg-navy-900">Paramètres</button>
-      </nav>
-    </header>
+    <!-- APPLICATION PRINCIPALE -->
+    <div class="h-full flex flex-col">
+      <!-- HEADER AVEC BOUTON PWA -->
+      <header class="bg-navy-800 text-white shadow-xl sticky top-0 z-40">
+        <div class="max-w-screen-xl mx-auto px-4 py-3 flex items-center justify-between">
+          <div class="flex items-center space-x-3">
+            <div
+              class="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-700 rounded-lg flex items-center justify-center"
+            >
+              <svg
+                class="w-6 h-6 text-white"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                stroke-width="2"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"
+                />
+              </svg>
+            </div>
+             <div>
+               <h1 class="text-sm font-bold">DOXTEHAD Budget v2.0</h1>
+               <p class="text-[10px] text-slate-300">Gestion Financière Structurée — Cloud Supabase</p>
+             </div>
+           </div>
+           <div class="flex items-center space-x-2">
+             <button
+               id="btn-pwa-install"
+               class="hidden px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-xs font-semibold rounded-lg transition"
+             >
+               📲 Installer
+             </button>
+             <div
+               id="auth-user-badge"
+               class="hidden px-3 py-1.5 bg-blue-600 rounded-lg text-xs font-semibold"
+             >
+               🔐 Connecté
+             </div>
+             <button
+               onclick="DoxtehadApp.handleLogout()"
+               class="p-2 hover:bg-navy-900 rounded-lg transition"
+               title="Déconnexion"
+             >
+               <svg
+                 class="w-5 h-5"
+                 fill="none"
+                 stroke="currentColor"
+                 viewBox="0 0 24 24"
+                 stroke-width="2"
+               >
+                 <path
+                   stroke-linecap="round"
+                   stroke-linejoin="round"
+                   d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                 />
+               </svg>
+             </button>
+           </div>
+        </div>
 
-    <!-- CONTENT -->
-    <main class="flex-1 overflow-y-auto">
-      <div class="max-w-screen-xl mx-auto p-4 space-y-6">
+        <!-- TABS NAVIGATION -->
+        <nav class="max-w-screen-xl mx-auto px-4 flex space-x-1 overflow-x-auto pb-1">
+          <button
+            id="tab-dashboard"
+            onclick="DoxtehadApp.switchTab('dashboard')"
+            class="tab-btn px-4 py-2 text-xs font-semibold rounded-t-lg transition bg-white text-navy-800"
+          >
+            Tableau de Bord
+          </button>
+          <button
+            id="tab-operations"
+            onclick="DoxtehadApp.switchTab('operations')"
+            class="tab-btn px-4 py-2 text-xs font-semibold rounded-t-lg transition text-slate-300 hover:text-white hover:bg-navy-900"
+          >
+            Opérations
+          </button>
+          <button
+            id="tab-projects"
+            onclick="DoxtehadApp.switchTab('projects')"
+            class="tab-btn px-4 py-2 text-xs font-semibold rounded-t-lg transition text-slate-300 hover:text-white hover:bg-navy-900"
+          >
+            Projets SMART
+          </button>
+          <button
+            id="tab-reports"
+            onclick="DoxtehadApp.switchTab('reports')"
+            class="tab-btn px-4 py-2 text-xs font-semibold rounded-t-lg transition text-slate-300 hover:text-white hover:bg-navy-900"
+          >
+            Rapports
+          </button>
+          <button
+            id="tab-settings"
+            onclick="DoxtehadApp.switchTab('settings')"
+            class="tab-btn px-4 py-2 text-xs font-semibold rounded-t-lg transition text-slate-300 hover:text-white hover:bg-navy-900"
+          >
+            Paramètres
+          </button>
+        </nav>
+      </header>
 
-        <!-- PAGE: TABLEAU DE BORD -->
-        <section id="page-dashboard">
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div class="bg-white p-5 rounded-xl shadow border border-slate-200 space-y-1">
-              <p class="text-[10px] uppercase font-bold text-slate-400">Revenus du mois</p>
-              <p id="kpi-revenus" class="text-2xl font-bold text-emerald-600">0.00 $US</p>
-            </div>
-            <div class="bg-white p-5 rounded-xl shadow border border-slate-200 space-y-1">
-              <p class="text-[10px] uppercase font-bold text-slate-400">Dépenses totales</p>
-              <p id="kpi-depenses" class="text-2xl font-bold text-rose-600">0.00 $US</p>
-            </div>
-            <div class="bg-white p-5 rounded-xl shadow border border-slate-200 space-y-1">
-              <p class="text-[10px] uppercase font-bold text-slate-400">Projets financés</p>
-              <p id="kpi-projets" class="text-2xl font-bold text-blue-600">0.00 $US</p>
-            </div>
-            <div class="bg-white p-5 rounded-xl shadow border border-slate-200 space-y-1">
-              <p class="text-[10px] uppercase font-bold text-slate-400">Épargne cumulée</p>
-              <p id="kpi-epargne" class="text-2xl font-bold text-amber-600">0.00 $US</p>
-            </div>
-          </div>
-
-          <!-- RÈGLE 75/15/10 -->
-          <div class="bg-white rounded-xl shadow border border-slate-200 p-5 mt-6 space-y-4">
-            <h2 class="text-sm font-bold text-slate-800 uppercase">Discipline Budgétaire DOXTEHAD — Règle 75/15/10</h2>
-            <div class="space-y-4">
-              <div>
-                <div class="flex justify-between text-xs mb-1">
-                  <span class="font-semibold text-slate-600">Dépenses : <span id="actual-depenses-text" class="text-slate-800">0.00 $US</span> / <span id="val-max-depenses" class="text-rose-600 font-bold">0.00 $US</span> Max (75%)</span>
-                  <span id="pct-depenses" class="font-bold text-slate-800">0.0%</span>
-                </div>
-                <div class="w-full bg-slate-100 h-4 rounded-full overflow-hidden relative">
-                  <div id="bar-depenses" class="bg-rose-500 h-4 rounded-full transition-all" style="width:0%"></div>
-                  <div class="absolute inset-0 border border-slate-300 rounded-full pointer-events-none"></div>
-                </div>
-                <div id="alert-depenses-box" class="mt-2 p-2 bg-rose-50 text-rose-700 text-[10px] rounded border border-rose-200 font-semibold hidden">
-                  ⚠️ Vous dépassez la limite de dépenses de 75% !
-                </div>
+      <!-- CONTENT -->
+      <main class="flex-1 overflow-y-auto">
+        <div class="max-w-screen-xl mx-auto p-4 space-y-6">
+          <!-- PAGE: TABLEAU DE BORD -->
+          <section id="page-dashboard">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div class="bg-white p-5 rounded-xl shadow border border-slate-200 space-y-1">
+                <p class="text-[10px] uppercase font-bold text-slate-400">Revenus du mois</p>
+                <p id="kpi-revenus" class="text-2xl font-bold text-emerald-600">0.00 $US</p>
               </div>
-
-              <div>
-                <div class="flex justify-between text-xs mb-1">
-                  <span class="font-semibold text-slate-600">Projets : <span id="actual-projets-text" class="text-slate-800">0.00 $US</span> / <span id="val-max-projets" class="text-blue-600 font-bold">0.00 $US</span> Max (15%)</span>
-                  <span id="pct-projets" class="font-bold text-slate-800">0.0%</span>
-                </div>
-                <div class="w-full bg-slate-100 h-4 rounded-full overflow-hidden relative">
-                  <div id="bar-projets" class="bg-blue-600 h-4 rounded-full transition-all" style="width:0%"></div>
-                  <div class="absolute inset-0 border border-slate-300 rounded-full pointer-events-none"></div>
-                </div>
-                <div id="alert-projets-box" class="mt-2 p-2 bg-blue-50 text-blue-700 text-[10px] rounded border border-blue-200 font-semibold hidden">
-                  ⚠️ Attention : vous dépassez l'allocation projets de 15%.
-                </div>
+              <div class="bg-white p-5 rounded-xl shadow border border-slate-200 space-y-1">
+                <p class="text-[10px] uppercase font-bold text-slate-400">Dépenses totales</p>
+                <p id="kpi-depenses" class="text-2xl font-bold text-rose-600">0.00 $US</p>
               </div>
-
-              <div>
-                <div class="flex justify-between text-xs mb-1">
-                  <span class="font-semibold text-slate-600">Épargne : <span id="actual-epargne-text" class="text-slate-800">0.00 $US</span> / <span id="val-min-epargne" class="text-amber-600 font-bold">0.00 $US</span> Min (10%)</span>
-                  <span id="pct-epargne" class="font-bold text-slate-800">0.0%</span>
-                </div>
-                <div class="w-full bg-slate-100 h-4 rounded-full overflow-hidden relative">
-                  <div id="bar-epargne" class="bg-amber-500 h-4 rounded-full transition-all" style="width:0%"></div>
-                  <div class="absolute inset-0 border border-slate-300 rounded-full pointer-events-none"></div>
-                </div>
-                <div id="alert-epargne-box" class="mt-2 p-2 bg-amber-50 text-amber-700 text-[10px] rounded border border-amber-200 font-semibold hidden">
-                  ⚠️ Attention : votre épargne est inférieure au minimum de 10%.
-                </div>
+              <div class="bg-white p-5 rounded-xl shadow border border-slate-200 space-y-1">
+                <p class="text-[10px] uppercase font-bold text-slate-400">Projets financés</p>
+                <p id="kpi-projets" class="text-2xl font-bold text-blue-600">0.00 $US</p>
               </div>
-            </div>
-          </div>
-
-          <!-- OPÉRATIONS RÉCENTES -->
-          <div class="bg-white rounded-xl shadow border border-slate-200 p-5 mt-6">
-            <div class="flex justify-between items-center mb-4">
-              <h2 class="text-sm font-bold text-slate-800 uppercase">Opérations Récentes (5 dernières)</h2>
-              <button onclick="DoxtehadApp.openOperationModal()" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-lg transition">+ Nouvelle</button>
-            </div>
-            <div class="overflow-x-auto">
-              <table class="w-full text-xs">
-                <thead class="bg-slate-50 text-slate-600 uppercase text-[10px] font-bold">
-                  <tr>
-                    <th class="p-3 text-left">Date</th>
-                    <th class="p-3 text-left">Type</th>
-                    <th class="p-3 text-left">Catégorie</th>
-                    <th class="p-3 text-left">Description</th>
-                    <th class="p-3 text-right">Montant</th>
-                  </tr>
-                </thead>
-                <tbody id="recent-ops-tbody" class="text-xs">
-                  <tr><td colspan="5" class="p-4 text-center text-slate-400">Aucune opération enregistrée.</td></tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </section>
-
-        <!-- PAGE: OPÉRATIONS -->
-        <section id="page-operations" class="hidden">
-          <div class="bg-white rounded-xl shadow border border-slate-200 p-5">
-            <div class="flex justify-between items-center mb-4">
-              <h2 class="text-sm font-bold text-slate-800 uppercase">Toutes les Opérations (<span id="ops-count">0</span>)</h2>
-              <div class="flex space-x-2">
-                <select id="filter-type" onchange="DoxtehadApp.renderOperationsTable()" class="px-3 py-1.5 border border-slate-300 rounded-lg text-xs">
-                  <option value="ALL">Toutes</option>
-                  <option value="Revenu">Revenus</option>
-                  <option value="Dépense">Dépenses</option>
-                  <option value="Projet">Projets</option>
-                  <option value="Épargne">Épargne</option>
-                </select>
-                <button onclick="DoxtehadApp.openOperationModal()" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-lg transition">+ Nouvelle Opération</button>
-              </div>
-            </div>
-            <div class="overflow-x-auto">
-              <table class="w-full text-xs">
-                <thead class="bg-slate-50 text-slate-600 uppercase text-[10px] font-bold">
-                  <tr>
-                    <th class="p-3 text-left">Date</th>
-                    <th class="p-3 text-left">Type</th>
-                    <th class="p-3 text-left">Catégorie</th>
-                    <th class="p-3 text-left">Description</th>
-                    <th class="p-3 text-right">Montant</th>
-                    <th class="p-3 text-center">Actions</th>
-                  </tr>
-                </thead>
-                <tbody id="full-ops-tbody" class="text-xs">
-                  <tr><td colspan="6" class="p-6 text-center text-slate-400">Aucune opération trouvée.</td></tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </section>
-
-        <!-- PAGE: PROJETS SMART -->
-        <section id="page-projects" class="hidden">
-          <div class="bg-white rounded-xl shadow border border-slate-200 p-5 mb-4">
-            <h2 class="text-sm font-bold text-slate-800 uppercase mb-4">Synthèse Globale des Projets</h2>
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <div class="p-4 bg-slate-50 rounded-lg border border-slate-200">
-                <p class="text-[10px] uppercase font-bold text-slate-400">Objectif Total</p>
-                <p id="proj-kpi-target" class="text-xl font-bold text-slate-800">0.00 $US</p>
-              </div>
-              <div class="p-4 bg-blue-50 rounded-lg border border-blue-200">
-                <p class="text-[10px] uppercase font-bold text-blue-600">Capital Mobilisé</p>
-                <p id="proj-kpi-saved" class="text-xl font-bold text-blue-700">0.00 $US</p>
-              </div>
-              <div class="p-4 bg-emerald-50 rounded-lg border border-emerald-200">
-                <p class="text-[10px] uppercase font-bold text-emerald-600">Progression Moyenne</p>
-                <p id="proj-kpi-pct" class="text-xl font-bold text-emerald-700">0.0%</p>
-              </div>
-              <div class="p-4 bg-amber-50 rounded-lg border border-amber-200">
-                <p class="text-[10px] uppercase font-bold text-amber-600">Effort Mensuel Requis</p>
-                <p id="proj-kpi-monthly" class="text-xl font-bold text-amber-700">0.00 $US / mo</p>
+              <div class="bg-white p-5 rounded-xl shadow border border-slate-200 space-y-1">
+                <p class="text-[10px] uppercase font-bold text-slate-400">Épargne cumulée</p>
+                <p id="kpi-epargne" class="text-2xl font-bold text-amber-600">0.00 $US</p>
               </div>
             </div>
-          </div>
 
-          <div class="bg-white rounded-xl shadow border border-slate-200 p-5">
-            <div class="flex justify-between items-center mb-4">
-              <h2 class="text-sm font-bold text-slate-800 uppercase">Portefeuille de Projets SMART (<span id="projects-count">0</span>)</h2>
-              <div class="flex space-x-2">
-                <select id="proj-filter-category" onchange="DoxtehadApp.renderProjectsGrid()" class="px-3 py-1.5 border border-slate-300 rounded-lg text-xs">
-                  <option value="ALL">Toutes catégories</option>
-                  <option value="Investissement">Investissement</option>
-                  <option value="Immobilier">Immobilier</option>
-                  <option value="Équipement">Équipement</option>
-                  <option value="Réserve">Réserve d'urgence</option>
-                  <option value="Autre">Autre</option>
-                </select>
-                <select id="proj-filter-status" onchange="DoxtehadApp.renderProjectsGrid()" class="px-3 py-1.5 border border-slate-300 rounded-lg text-xs">
-                  <option value="ALL">Tous statuts</option>
-                  <option value="En cours">Actifs</option>
-                  <option value="En pause">En pause</option>
-                  <option value="Atteint">Terminés</option>
-                </select>
-                <button onclick="DoxtehadApp.openProjectModal()" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-lg transition">+ Nouveau Projet SMART</button>
-              </div>
-            </div>
-            <div id="projects-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              <div class="col-span-full p-8 text-center text-slate-400">Aucun projet trouvé.</div>
-            </div>
-          </div>
-        </section>
-
-        <!-- PAGE: RAPPORTS -->
-        <section id="page-reports" class="hidden">
-          <div class="bg-white rounded-xl shadow border border-slate-200 p-5 space-y-6">
-            <h2 class="text-sm font-bold text-slate-800 uppercase">Analyse Financière Complète</h2>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- RÈGLE 75/15/10 -->
+            <div class="bg-white rounded-xl shadow border border-slate-200 p-5 mt-6 space-y-4">
+              <h2 class="text-sm font-bold text-slate-800 uppercase">
+                Discipline Budgétaire DOXTEHAD — Règle 75/15/10
+              </h2>
               <div class="space-y-4">
-                <div class="p-4 bg-slate-50 rounded-lg">
-                  <p class="text-[10px] uppercase font-bold text-slate-400 mb-2">Revenus Totaux</p>
-                  <p id="rep-total-rev" class="text-2xl font-bold text-emerald-600">0.00 $US</p>
+                <div>
+                  <div class="flex justify-between text-xs mb-1">
+                    <span class="font-semibold text-slate-600"
+                      >Dépenses :
+                      <span id="actual-depenses-text" class="text-slate-800">0.00 $US</span> /
+                      <span id="val-max-depenses" class="text-rose-600 font-bold">0.00 $US</span>
+                      Max (75%)</span
+                    >
+                    <span id="pct-depenses" class="font-bold text-slate-800">0.0%</span>
+                  </div>
+                  <div class="w-full bg-slate-100 h-4 rounded-full overflow-hidden relative">
+                    <div
+                      id="bar-depenses"
+                      class="bg-rose-500 h-4 rounded-full transition-all"
+                      style="width: 0%"
+                    ></div>
+                    <div
+                      class="absolute inset-0 border border-slate-300 rounded-full pointer-events-none"
+                    ></div>
+                  </div>
+                  <div
+                    id="alert-depenses-box"
+                    class="mt-2 p-2 bg-rose-50 text-rose-700 text-[10px] rounded border border-rose-200 font-semibold hidden"
+                  >
+                    ⚠️ Vous dépassez la limite de dépenses de 75% !
+                  </div>
                 </div>
-                <div class="p-4 bg-slate-50 rounded-lg">
-                  <p class="text-[10px] uppercase font-bold text-slate-400 mb-2">Total Engagé (Dép+Proj+Épar)</p>
-                  <p id="rep-total-eng" class="text-2xl font-bold text-slate-800">0.00 $US</p>
+
+                <div>
+                  <div class="flex justify-between text-xs mb-1">
+                    <span class="font-semibold text-slate-600"
+                      >Projets :
+                      <span id="actual-projets-text" class="text-slate-800">0.00 $US</span> /
+                      <span id="val-max-projets" class="text-blue-600 font-bold">0.00 $US</span> Max
+                      (15%)</span
+                    >
+                    <span id="pct-projets" class="font-bold text-slate-800">0.0%</span>
+                  </div>
+                  <div class="w-full bg-slate-100 h-4 rounded-full overflow-hidden relative">
+                    <div
+                      id="bar-projets"
+                      class="bg-blue-600 h-4 rounded-full transition-all"
+                      style="width: 0%"
+                    ></div>
+                    <div
+                      class="absolute inset-0 border border-slate-300 rounded-full pointer-events-none"
+                    ></div>
+                  </div>
+                  <div
+                    id="alert-projets-box"
+                    class="mt-2 p-2 bg-blue-50 text-blue-700 text-[10px] rounded border border-blue-200 font-semibold hidden"
+                  >
+                    ⚠️ Attention : vous dépassez l'allocation projets de 15%.
+                  </div>
+                </div>
+
+                <div>
+                  <div class="flex justify-between text-xs mb-1">
+                    <span class="font-semibold text-slate-600"
+                      >Épargne :
+                      <span id="actual-epargne-text" class="text-slate-800">0.00 $US</span> /
+                      <span id="val-min-epargne" class="text-amber-600 font-bold">0.00 $US</span>
+                      Min (10%)</span
+                    >
+                    <span id="pct-epargne" class="font-bold text-slate-800">0.0%</span>
+                  </div>
+                  <div class="w-full bg-slate-100 h-4 rounded-full overflow-hidden relative">
+                    <div
+                      id="bar-epargne"
+                      class="bg-amber-500 h-4 rounded-full transition-all"
+                      style="width: 0%"
+                    ></div>
+                    <div
+                      class="absolute inset-0 border border-slate-300 rounded-full pointer-events-none"
+                    ></div>
+                  </div>
+                  <div
+                    id="alert-epargne-box"
+                    class="mt-2 p-2 bg-amber-50 text-amber-700 text-[10px] rounded border border-amber-200 font-semibold hidden"
+                  >
+                    ⚠️ Attention : votre épargne est inférieure au minimum de 10%.
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- OPÉRATIONS RÉCENTES -->
+            <div class="bg-white rounded-xl shadow border border-slate-200 p-5 mt-6">
+              <div class="flex justify-between items-center mb-4">
+                <h2 class="text-sm font-bold text-slate-800 uppercase">
+                  Opérations Récentes (5 dernières)
+                </h2>
+                <button
+                  onclick="DoxtehadApp.openOperationModal()"
+                  class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-lg transition"
+                >
+                  + Nouvelle
+                </button>
+              </div>
+              <div class="overflow-x-auto">
+                <table class="w-full text-xs">
+                  <thead class="bg-slate-50 text-slate-600 uppercase text-[10px] font-bold">
+                    <tr>
+                      <th class="p-3 text-left">Date</th>
+                      <th class="p-3 text-left">Type</th>
+                      <th class="p-3 text-left">Catégorie</th>
+                      <th class="p-3 text-left">Description</th>
+                      <th class="p-3 text-right">Montant</th>
+                    </tr>
+                  </thead>
+                  <tbody id="recent-ops-tbody" class="text-xs">
+                    <tr>
+                      <td colspan="5" class="p-4 text-center text-slate-400">
+                        Aucune opération enregistrée.
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+
+          <!-- PAGE: OPÉRATIONS -->
+          <section id="page-operations" class="hidden">
+            <div class="bg-white rounded-xl shadow border border-slate-200 p-5">
+              <div class="flex justify-between items-center mb-4">
+                <h2 class="text-sm font-bold text-slate-800 uppercase">
+                  Toutes les Opérations (<span id="ops-count">0</span>)
+                </h2>
+                <div class="flex space-x-2">
+                  <select
+                    id="filter-type"
+                    onchange="DoxtehadApp.renderOperationsTable()"
+                    class="px-3 py-1.5 border border-slate-300 rounded-lg text-xs"
+                  >
+                    <option value="ALL">Toutes</option>
+                    <option value="Revenu">Revenus</option>
+                    <option value="Dépense">Dépenses</option>
+                    <option value="Projet">Projets</option>
+                    <option value="Épargne">Épargne</option>
+                  </select>
+                  <button
+                    onclick="DoxtehadApp.openOperationModal()"
+                    class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-lg transition"
+                  >
+                    + Nouvelle Opération
+                  </button>
+                </div>
+              </div>
+              <div class="overflow-x-auto">
+                <table class="w-full text-xs">
+                  <thead class="bg-slate-50 text-slate-600 uppercase text-[10px] font-bold">
+                    <tr>
+                      <th class="p-3 text-left">Date</th>
+                      <th class="p-3 text-left">Type</th>
+                      <th class="p-3 text-left">Catégorie</th>
+                      <th class="p-3 text-left">Description</th>
+                      <th class="p-3 text-right">Montant</th>
+                      <th class="p-3 text-center">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="full-ops-tbody" class="text-xs">
+                    <tr>
+                      <td colspan="6" class="p-6 text-center text-slate-400">
+                        Aucune opération trouvée.
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+
+          <!-- PAGE: PROJETS SMART -->
+          <section id="page-projects" class="hidden">
+            <div class="bg-white rounded-xl shadow border border-slate-200 p-5 mb-4">
+              <h2 class="text-sm font-bold text-slate-800 uppercase mb-4">
+                Synthèse Globale des Projets
+              </h2>
+              <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div class="p-4 bg-slate-50 rounded-lg border border-slate-200">
+                  <p class="text-[10px] uppercase font-bold text-slate-400">Objectif Total</p>
+                  <p id="proj-kpi-target" class="text-xl font-bold text-slate-800">0.00 $US</p>
+                </div>
+                <div class="p-4 bg-blue-50 rounded-lg border border-blue-200">
+                  <p class="text-[10px] uppercase font-bold text-blue-600">Capital Mobilisé</p>
+                  <p id="proj-kpi-saved" class="text-xl font-bold text-blue-700">0.00 $US</p>
                 </div>
                 <div class="p-4 bg-emerald-50 rounded-lg border border-emerald-200">
-                  <p class="text-[10px] uppercase font-bold text-emerald-600 mb-2">Disponible Restant</p>
-                  <p id="rep-total-dispo" class="text-2xl font-bold text-emerald-700">0.00 $US</p>
+                  <p class="text-[10px] uppercase font-bold text-emerald-600">
+                    Progression Moyenne
+                  </p>
+                  <p id="proj-kpi-pct" class="text-xl font-bold text-emerald-700">0.0%</p>
                 </div>
-              </div>
-
-              <div class="flex flex-col items-center justify-center">
-                <canvas id="custom-pie-canvas" width="260" height="260"></canvas>
-                <div class="mt-4 grid grid-cols-2 gap-2 text-xs">
-                  <div class="flex items-center space-x-1">
-                    <div class="w-3 h-3 bg-rose-500 rounded"></div>
-                    <span class="text-slate-600">Dépenses</span>
-                  </div>
-                  <div class="flex items-center space-x-1">
-                    <div class="w-3 h-3 bg-blue-600 rounded"></div>
-                    <span class="text-slate-600">Projets</span>
-                  </div>
-                  <div class="flex items-center space-x-1">
-                    <div class="w-3 h-3 bg-amber-500 rounded"></div>
-                    <span class="text-slate-600">Épargne</span>
-                  </div>
-                  <div class="flex items-center space-x-1">
-                    <div class="w-3 h-3 bg-emerald-500 rounded"></div>
-                    <span class="text-slate-600">Disponible</span>
-                  </div>
+                <div class="p-4 bg-amber-50 rounded-lg border border-amber-200">
+                  <p class="text-[10px] uppercase font-bold text-amber-600">
+                    Effort Mensuel Requis
+                  </p>
+                  <p id="proj-kpi-monthly" class="text-xl font-bold text-amber-700">
+                    0.00 $US / mo
+                  </p>
                 </div>
               </div>
             </div>
 
-            <div class="pt-4 border-t border-slate-200 space-y-3">
-              <h3 class="text-xs font-bold text-slate-700 uppercase">Vérification Règle 75/15/10</h3>
-              <div class="space-y-2">
-                <div class="flex justify-between text-xs">
-                  <span class="font-medium text-slate-600">Dépenses :</span>
-                  <span id="rep-depense-pct" class="font-bold text-slate-800">0.0%</span>
+            <div class="bg-white rounded-xl shadow border border-slate-200 p-5">
+              <div class="flex justify-between items-center mb-4">
+                <h2 class="text-sm font-bold text-slate-800 uppercase">
+                  Portefeuille de Projets SMART (<span id="projects-count">0</span>)
+                </h2>
+                <div class="flex space-x-2">
+                  <select
+                    id="proj-filter-category"
+                    onchange="DoxtehadApp.renderProjectsGrid()"
+                    class="px-3 py-1.5 border border-slate-300 rounded-lg text-xs"
+                  >
+                    <option value="ALL">Toutes catégories</option>
+                    <option value="Investissement">Investissement</option>
+                    <option value="Immobilier">Immobilier</option>
+                    <option value="Équipement">Équipement</option>
+                    <option value="Réserve">Réserve d'urgence</option>
+                    <option value="Autre">Autre</option>
+                  </select>
+                  <select
+                    id="proj-filter-status"
+                    onchange="DoxtehadApp.renderProjectsGrid()"
+                    class="px-3 py-1.5 border border-slate-300 rounded-lg text-xs"
+                  >
+                    <option value="ALL">Tous statuts</option>
+                    <option value="En cours">Actifs</option>
+                    <option value="En pause">En pause</option>
+                    <option value="Atteint">Terminés</option>
+                  </select>
+                  <button
+                    onclick="DoxtehadApp.openProjectModal()"
+                    class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-lg transition"
+                  >
+                    + Nouveau Projet SMART
+                  </button>
                 </div>
-                <div class="w-full bg-slate-100 h-3 rounded-full overflow-hidden">
-                  <div id="rep-depense-bar" class="bg-rose-500 h-3 rounded-full" style="width:0%"></div>
+              </div>
+              <div id="projects-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div class="col-span-full p-8 text-center text-slate-400">Aucun projet trouvé.</div>
+              </div>
+            </div>
+          </section>
+
+          <!-- PAGE: RAPPORTS -->
+          <section id="page-reports" class="hidden">
+            <div class="bg-white rounded-xl shadow border border-slate-200 p-5 space-y-6">
+              <h2 class="text-sm font-bold text-slate-800 uppercase">
+                Analyse Financière Complète
+              </h2>
+
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="space-y-4">
+                  <div class="p-4 bg-slate-50 rounded-lg">
+                    <p class="text-[10px] uppercase font-bold text-slate-400 mb-2">
+                      Revenus Totaux
+                    </p>
+                    <p id="rep-total-rev" class="text-2xl font-bold text-emerald-600">0.00 $US</p>
+                  </div>
+                  <div class="p-4 bg-slate-50 rounded-lg">
+                    <p class="text-[10px] uppercase font-bold text-slate-400 mb-2">
+                      Total Engagé (Dép+Proj+Épar)
+                    </p>
+                    <p id="rep-total-eng" class="text-2xl font-bold text-slate-800">0.00 $US</p>
+                  </div>
+                  <div class="p-4 bg-emerald-50 rounded-lg border border-emerald-200">
+                    <p class="text-[10px] uppercase font-bold text-emerald-600 mb-2">
+                      Disponible Restant
+                    </p>
+                    <p id="rep-total-dispo" class="text-2xl font-bold text-emerald-700">0.00 $US</p>
+                  </div>
                 </div>
 
-                <div class="flex justify-between text-xs">
-                  <span class="font-medium text-slate-600">Projets :</span>
-                  <span id="rep-projet-pct" class="font-bold text-slate-800">0.0%</span>
+                <div class="flex flex-col items-center justify-center">
+                  <canvas id="custom-pie-canvas" width="260" height="260"></canvas>
+                  <div class="mt-4 grid grid-cols-2 gap-2 text-xs">
+                    <div class="flex items-center space-x-1">
+                      <div class="w-3 h-3 bg-rose-500 rounded"></div>
+                      <span class="text-slate-600">Dépenses</span>
+                    </div>
+                    <div class="flex items-center space-x-1">
+                      <div class="w-3 h-3 bg-blue-600 rounded"></div>
+                      <span class="text-slate-600">Projets</span>
+                    </div>
+                    <div class="flex items-center space-x-1">
+                      <div class="w-3 h-3 bg-amber-500 rounded"></div>
+                      <span class="text-slate-600">Épargne</span>
+                    </div>
+                    <div class="flex items-center space-x-1">
+                      <div class="w-3 h-3 bg-emerald-500 rounded"></div>
+                      <span class="text-slate-600">Disponible</span>
+                    </div>
+                  </div>
                 </div>
-                <div class="w-full bg-slate-100 h-3 rounded-full overflow-hidden">
-                  <div id="rep-projet-bar" class="bg-blue-600 h-3 rounded-full" style="width:0%"></div>
-                </div>
+              </div>
 
-                <div class="flex justify-between text-xs">
-                  <span class="font-medium text-slate-600">Épargne :</span>
-                  <span id="rep-epargne-pct" class="font-bold text-slate-800">0.0%</span>
-                </div>
-                <div class="w-full bg-slate-100 h-3 rounded-full overflow-hidden">
-                  <div id="rep-epargne-bar" class="bg-amber-500 h-3 rounded-full" style="width:0%"></div>
+              <div class="pt-4 border-t border-slate-200 space-y-3">
+                <h3 class="text-xs font-bold text-slate-700 uppercase">
+                  Vérification Règle 75/15/10
+                </h3>
+                <div class="space-y-2">
+                  <div class="flex justify-between text-xs">
+                    <span class="font-medium text-slate-600">Dépenses :</span>
+                    <span id="rep-depense-pct" class="font-bold text-slate-800">0.0%</span>
+                  </div>
+                  <div class="w-full bg-slate-100 h-3 rounded-full overflow-hidden">
+                    <div
+                      id="rep-depense-bar"
+                      class="bg-rose-500 h-3 rounded-full"
+                      style="width: 0%"
+                    ></div>
+                  </div>
+
+                  <div class="flex justify-between text-xs">
+                    <span class="font-medium text-slate-600">Projets :</span>
+                    <span id="rep-projet-pct" class="font-bold text-slate-800">0.0%</span>
+                  </div>
+                  <div class="w-full bg-slate-100 h-3 rounded-full overflow-hidden">
+                    <div
+                      id="rep-projet-bar"
+                      class="bg-blue-600 h-3 rounded-full"
+                      style="width: 0%"
+                    ></div>
+                  </div>
+
+                  <div class="flex justify-between text-xs">
+                    <span class="font-medium text-slate-600">Épargne :</span>
+                    <span id="rep-epargne-pct" class="font-bold text-slate-800">0.0%</span>
+                  </div>
+                  <div class="w-full bg-slate-100 h-3 rounded-full overflow-hidden">
+                    <div
+                      id="rep-epargne-bar"
+                      class="bg-amber-500 h-3 rounded-full"
+                      style="width: 0%"
+                    ></div>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        </section>
+          </section>
 
-        <!-- PAGE: PARAMÈTRES -->
-        <section id="page-settings" class="hidden space-y-6">
-          <div class="bg-white rounded-xl shadow border border-slate-200 p-5 space-y-4">
-            <h2 class="text-sm font-bold text-slate-800 uppercase">Sécurité & Authentification</h2>
-            <div class="space-y-2 text-xs">
-              <p><span class="font-semibold">Date de création mot de passe :</span> <span id="pwd-last-date" class="text-slate-600">—</span></p>
-              <p><span class="font-semibold">Jours restants avant expiration (180j) :</span> <span id="pwd-remaining-days" class="text-slate-600">—</span></p>
+          <!-- PAGE: PARAMÈTRES -->
+          <section id="page-settings" class="hidden space-y-6">
+            <div class="bg-white rounded-xl shadow border border-slate-200 p-5 space-y-4">
+              <h2 class="text-sm font-bold text-slate-800 uppercase">
+                Sécurité & Authentification
+              </h2>
+              <div class="space-y-2 text-xs">
+                <p>
+                  <span class="font-semibold">Compte :</span>
+                  <span id="auth-user-email" class="text-slate-600">Non connecté</span>
+                </p>
+                <p>
+                  <span class="font-semibold">Statut sync :</span>
+                  <span id="auth-sync-status" class="text-slate-600">—</span>
+                </p>
+                <p>
+                  <span class="font-semibold">Date de création mot de passe :</span>
+                  <span id="pwd-last-date" class="text-slate-600">—</span>
+                </p>
+                <p>
+                  <span class="font-semibold">Jours restants avant expiration (180j) :</span>
+                  <span id="pwd-remaining-days" class="text-slate-600">—</span>
+                </p>
+              </div>
+              <button
+                onclick="DoxtehadApp.handleLogout()"
+                class="w-full bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold py-2 rounded-lg transition"
+              >
+                🔒 Déconnexion (Supabase Auth)
+              </button>
             </div>
-            <form id="form-change-password" class="space-y-2" onsubmit="DoxtehadApp.handlePasswordChange(event)">
-              <input id="change-old-pwd" type="password" placeholder="Mot de passe actuel" required class="w-full p-2 border border-slate-300 rounded-lg text-xs">
-              <input id="change-new-pwd" type="password" placeholder="Nouveau mot de passe (8+ car.)" required minlength="8" class="w-full p-2 border border-slate-300 rounded-lg text-xs">
-              <input id="change-confirm-pwd" type="password" placeholder="Confirmer" required minlength="8" class="w-full p-2 border border-slate-300 rounded-lg text-xs">
-              <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold py-2 rounded-lg transition">Changer Mot de Passe</button>
-            </form>
-            <button onclick="DoxtehadApp.simulateExpiration()" class="w-full bg-amber-100 hover:bg-amber-200 text-amber-800 text-xs font-semibold py-2 rounded-lg transition">Simuler Expiration (Test)</button>
-          </div>
 
-          <div class="bg-white rounded-xl shadow border border-slate-200 p-5 space-y-4">
-            <h2 class="text-sm font-bold text-slate-800 uppercase">Gestion des Données</h2>
-            <div class="flex flex-col space-y-2">
-              <button onclick="DoxtehadApp.exportDataJSON()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold py-2 rounded-lg transition">💾 Exporter JSON (Backup)</button>
-              <button onclick="DoxtehadApp.exportDataCSV()" class="w-full bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold py-2 rounded-lg transition">📊 Exporter Opérations CSV</button>
-              <label class="w-full bg-slate-600 hover:bg-slate-700 text-white text-xs font-semibold py-2 rounded-lg transition cursor-pointer text-center">
-                📥 Importer JSON (Restaurer)
-                <input type="file" accept=".json" onchange="DoxtehadApp.importDataJSON(event)" class="hidden">
-              </label>
-              <button onclick="DoxtehadApp.confirmResetAll()" class="w-full bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold py-2 rounded-lg transition">🗑️ Réinitialiser Toutes les Données</button>
+            <div class="bg-white rounded-xl shadow border border-slate-200 p-5 space-y-4">
+              <h2 class="text-sm font-bold text-slate-800 uppercase">
+                Mot de Passe de Déverrouillage
+              </h2>
+              <div class="space-y-2 text-xs">
+                <p>
+                  Ce mot de passe chiffre localement toutes vos opérations budgétaires. Sans lui,
+                  vos données restent illisibles (même pour nous).
+                </p>
+              </div>
+              <form
+                id="form-change-password"
+                class="space-y-2"
+                onsubmit="DoxtehadApp.handlePasswordChange(event)"
+              >
+                <input
+                  id="change-old-pwd"
+                  type="password"
+                  placeholder="Mot de passe actuel"
+                  required
+                  class="w-full p-2 border border-slate-300 rounded-lg text-xs"
+                />
+                <input
+                  id="change-new-pwd"
+                  type="password"
+                  placeholder="Nouveau mot de passe (8+ car.)"
+                  required
+                  minlength="8"
+                  class="w-full p-2 border border-slate-300 rounded-lg text-xs"
+                />
+                <input
+                  id="change-confirm-pwd"
+                  type="password"
+                  placeholder="Confirmer"
+                  required
+                  minlength="8"
+                  class="w-full p-2 border border-slate-300 rounded-lg text-xs"
+                />
+                <button
+                  type="submit"
+                  class="w-full bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold py-2 rounded-lg transition"
+                >
+                  Changer Mot de Passe
+                </button>
+              </form>
+              <button
+                onclick="DoxtehadApp.simulateExpiration()"
+                class="w-full bg-amber-100 hover:bg-amber-200 text-amber-800 text-xs font-semibold py-2 rounded-lg transition"
+              >
+                Simuler Expiration (Test)
+              </button>
             </div>
-          </div>
-        </section>
 
+            <div class="bg-white rounded-xl shadow border border-slate-200 p-5 space-y-4">
+              <h2 class="text-sm font-bold text-slate-800 uppercase">Gestion des Données</h2>
+              <div class="flex flex-col space-y-2">
+                <button
+                  onclick="DoxtehadApp.exportDataJSON()"
+                  class="w-full bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold py-2 rounded-lg transition"
+                >
+                  💾 Exporter JSON (Backup)
+                </button>
+                <button
+                  onclick="DoxtehadApp.exportDataCSV()"
+                  class="w-full bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold py-2 rounded-lg transition"
+                >
+                  📊 Exporter Opérations CSV
+                </button>
+                <label
+                  class="w-full bg-slate-600 hover:bg-slate-700 text-white text-xs font-semibold py-2 rounded-lg transition cursor-pointer text-center"
+                >
+                  📥 Importer JSON (Restaurer)
+                  <input
+                    type="file"
+                    accept=".json"
+                    onchange="DoxtehadApp.importDataJSON(event)"
+                    class="hidden"
+                  />
+                </label>
+                <button
+                  onclick="DoxtehadApp.confirmResetAll()"
+                  class="w-full bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold py-2 rounded-lg transition"
+                >
+                  🗑️ Réinitialiser Toutes les Données
+                </button>
+              </div>
+            </div>
+          </section>
+        </div>
+      </main>
+
+      <!-- FOOTER -->
+      <footer class="bg-slate-800 text-slate-400 text-center text-[10px] py-3">
+        <p>© 2024 DOXTEHAD Budget v2.0 — PWA Offline-First • Vos données restent 100% locales</p>
+      </footer>
+    </div>
+
+    <!-- MODAL OPÉRATION -->
+    <div
+      id="modal-operation"
+      class="fixed inset-0 bg-slate-900/80 flex items-center justify-center z-50 hidden"
+    >
+      <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full mx-4 p-6 space-y-4">
+        <h2 id="modal-op-title" class="text-lg font-bold text-slate-800">Nouvelle Opération</h2>
+        <form id="form-operation" class="space-y-3" onsubmit="DoxtehadApp.saveOperation(event)">
+          <input id="op-id" type="hidden" />
+          <select
+            id="op-type"
+            required
+            class="w-full p-2 border border-slate-300 rounded-lg text-xs"
+          >
+            <option value="">-- Type --</option>
+            <option value="Revenu">Revenu</option>
+            <option value="Dépense">Dépense</option>
+            <option value="Projet">Projet</option>
+            <option value="Épargne">Épargne</option>
+          </select>
+          <input
+            id="op-category"
+            type="text"
+            placeholder="Catégorie (ex: Salaire, Loyer)"
+            required
+            class="w-full p-2 border border-slate-300 rounded-lg text-xs"
+          />
+          <input
+            id="op-desc"
+            type="text"
+            placeholder="Description"
+            class="w-full p-2 border border-slate-300 rounded-lg text-xs"
+          />
+          <input
+            id="op-amount"
+            type="number"
+            step="0.01"
+            min="0.01"
+            placeholder="Montant"
+            required
+            class="w-full p-2 border border-slate-300 rounded-lg text-xs"
+          />
+          <input
+            id="op-date"
+            type="date"
+            required
+            class="w-full p-2 border border-slate-300 rounded-lg text-xs"
+          />
+          <div class="flex space-x-2">
+            <button
+              type="submit"
+              class="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold py-2 rounded-lg transition"
+            >
+              Enregistrer
+            </button>
+            <button
+              type="button"
+              onclick="DoxtehadApp.closeModal('modal-operation')"
+              class="flex-1 bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-semibold py-2 rounded-lg transition"
+            >
+              Annuler
+            </button>
+          </div>
+        </form>
       </div>
-    </main>
-
-    <!-- FOOTER -->
-    <footer class="bg-slate-800 text-slate-400 text-center text-[10px] py-3">
-      <p>© 2024 DOXTEHAD Budget v2.0 — PWA Offline-First • Vos données restent 100% locales</p>
-    </footer>
-  </div>
-
-  <!-- MODAL OPÉRATION -->
-  <div id="modal-operation" class="fixed inset-0 bg-slate-900/80 flex items-center justify-center z-50 hidden">
-    <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full mx-4 p-6 space-y-4">
-      <h2 id="modal-op-title" class="text-lg font-bold text-slate-800">Nouvelle Opération</h2>
-      <form id="form-operation" class="space-y-3" onsubmit="DoxtehadApp.saveOperation(event)">
-        <input id="op-id" type="hidden">
-        <select id="op-type" required class="w-full p-2 border border-slate-300 rounded-lg text-xs">
-          <option value="">-- Type --</option>
-          <option value="Revenu">Revenu</option>
-          <option value="Dépense">Dépense</option>
-          <option value="Projet">Projet</option>
-          <option value="Épargne">Épargne</option>
-        </select>
-        <input id="op-category" type="text" placeholder="Catégorie (ex: Salaire, Loyer)" required class="w-full p-2 border border-slate-300 rounded-lg text-xs">
-        <input id="op-desc" type="text" placeholder="Description" class="w-full p-2 border border-slate-300 rounded-lg text-xs">
-        <input id="op-amount" type="number" step="0.01" min="0.01" placeholder="Montant" required class="w-full p-2 border border-slate-300 rounded-lg text-xs">
-        <input id="op-date" type="date" required class="w-full p-2 border border-slate-300 rounded-lg text-xs">
-        <div class="flex space-x-2">
-          <button type="submit" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold py-2 rounded-lg transition">Enregistrer</button>
-          <button type="button" onclick="DoxtehadApp.closeModal('modal-operation')" class="flex-1 bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-semibold py-2 rounded-lg transition">Annuler</button>
-        </div>
-      </form>
     </div>
-  </div>
 
-  <!-- MODAL PROJET SMART -->
-  <div id="modal-project" class="fixed inset-0 bg-slate-900/80 flex items-center justify-center z-50 hidden">
-    <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full mx-4 p-6 space-y-4">
-      <h2 id="modal-proj-title" class="text-lg font-bold text-slate-800">Nouveau Projet SMART</h2>
-      <form id="form-project" class="space-y-3" onsubmit="DoxtehadApp.saveProject(event)">
-        <input id="proj-id" type="hidden">
-        <input id="proj-title-input" type="text" placeholder="Titre du projet" required class="w-full p-2 border border-slate-300 rounded-lg text-xs">
-        <select id="proj-category" required class="w-full p-2 border border-slate-300 rounded-lg text-xs">
-          <option value="Investissement">Investissement</option>
-          <option value="Immobilier">Immobilier</option>
-          <option value="Équipement">Équipement</option>
-          <option value="Réserve">Réserve d'urgence</option>
-          <option value="Autre">Autre</option>
-        </select>
-        <select id="proj-priority" required class="w-full p-2 border border-slate-300 rounded-lg text-xs">
-          <option value="Haute">Priorité Haute</option>
-          <option value="Moyenne" selected>Priorité Moyenne</option>
-          <option value="Basse">Priorité Basse</option>
-        </select>
-        <input id="proj-target" type="number" step="0.01" min="0.01" placeholder="Objectif final ($)" required class="w-full p-2 border border-slate-300 rounded-lg text-xs">
-        <input id="proj-saved" type="number" step="0.01" min="0" placeholder="Capital actuel ($)" value="0" required class="w-full p-2 border border-slate-300 rounded-lg text-xs">
-        <input id="proj-deadline" type="date" required class="w-full p-2 border border-slate-300 rounded-lg text-xs">
-        <select id="proj-status" required class="w-full p-2 border border-slate-300 rounded-lg text-xs">
-          <option value="En cours" selected>Actif (En cours)</option>
-          <option value="En pause">En Pause</option>
-          <option value="Atteint">Terminé (Objectif atteint)</option>
-        </select>
-        <div class="flex space-x-2">
-          <button type="submit" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold py-2 rounded-lg transition">Enregistrer</button>
-          <button type="button" onclick="DoxtehadApp.closeModal('modal-project')" class="flex-1 bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-semibold py-2 rounded-lg transition">Annuler</button>
-        </div>
-      </form>
+    <!-- MODAL PROJET SMART -->
+    <div
+      id="modal-project"
+      class="fixed inset-0 bg-slate-900/80 flex items-center justify-center z-50 hidden"
+    >
+      <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full mx-4 p-6 space-y-4">
+        <h2 id="modal-proj-title" class="text-lg font-bold text-slate-800">Nouveau Projet SMART</h2>
+        <form id="form-project" class="space-y-3" onsubmit="DoxtehadApp.saveProject(event)">
+          <input id="proj-id" type="hidden" />
+          <input
+            id="proj-title-input"
+            type="text"
+            placeholder="Titre du projet"
+            required
+            class="w-full p-2 border border-slate-300 rounded-lg text-xs"
+          />
+          <select
+            id="proj-category"
+            required
+            class="w-full p-2 border border-slate-300 rounded-lg text-xs"
+          >
+            <option value="Investissement">Investissement</option>
+            <option value="Immobilier">Immobilier</option>
+            <option value="Équipement">Équipement</option>
+            <option value="Réserve">Réserve d'urgence</option>
+            <option value="Autre">Autre</option>
+          </select>
+          <select
+            id="proj-priority"
+            required
+            class="w-full p-2 border border-slate-300 rounded-lg text-xs"
+          >
+            <option value="Haute">Priorité Haute</option>
+            <option value="Moyenne" selected>Priorité Moyenne</option>
+            <option value="Basse">Priorité Basse</option>
+          </select>
+          <input
+            id="proj-target"
+            type="number"
+            step="0.01"
+            min="0.01"
+            placeholder="Objectif final ($)"
+            required
+            class="w-full p-2 border border-slate-300 rounded-lg text-xs"
+          />
+          <input
+            id="proj-saved"
+            type="number"
+            step="0.01"
+            min="0"
+            placeholder="Capital actuel ($)"
+            value="0"
+            required
+            class="w-full p-2 border border-slate-300 rounded-lg text-xs"
+          />
+          <input
+            id="proj-deadline"
+            type="date"
+            required
+            class="w-full p-2 border border-slate-300 rounded-lg text-xs"
+          />
+          <select
+            id="proj-status"
+            required
+            class="w-full p-2 border border-slate-300 rounded-lg text-xs"
+          >
+            <option value="En cours" selected>Actif (En cours)</option>
+            <option value="En pause">En Pause</option>
+            <option value="Atteint">Terminé (Objectif atteint)</option>
+          </select>
+          <div class="flex space-x-2">
+            <button
+              type="submit"
+              class="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold py-2 rounded-lg transition"
+            >
+              Enregistrer
+            </button>
+            <button
+              type="button"
+              onclick="DoxtehadApp.closeModal('modal-project')"
+              class="flex-1 bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-semibold py-2 rounded-lg transition"
+            >
+              Annuler
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
-  </div>
 
-  <!-- MODAL CONTRIBUTION RAPIDE -->
-  <div id="modal-project-contribution" class="fixed inset-0 bg-slate-900/80 flex items-center justify-center z-50 hidden">
-    <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4 p-6 space-y-4">
-      <h2 class="text-lg font-bold text-slate-800">Alimenter un Projet</h2>
-      <p id="contrib-proj-name" class="text-xs text-slate-600">—</p>
-      <form id="form-project-contribution" class="space-y-3" onsubmit="DoxtehadApp.saveProjectContribution(event)">
-        <input id="contrib-proj-id" type="hidden">
-        <input id="contrib-amount" type="number" step="0.01" min="0.01" placeholder="Montant à ajouter ($)" required class="w-full p-2 border border-slate-300 rounded-lg text-xs">
-        <div class="flex space-x-2">
-          <button type="submit" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold py-2 rounded-lg transition">Alimenter</button>
-          <button type="button" onclick="DoxtehadApp.closeModal('modal-project-contribution')" class="flex-1 bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-semibold py-2 rounded-lg transition">Annuler</button>
-        </div>
-      </form>
+    <!-- MODAL CONTRIBUTION RAPIDE -->
+    <div
+      id="modal-project-contribution"
+      class="fixed inset-0 bg-slate-900/80 flex items-center justify-center z-50 hidden"
+    >
+      <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4 p-6 space-y-4">
+        <h2 class="text-lg font-bold text-slate-800">Alimenter un Projet</h2>
+        <p id="contrib-proj-name" class="text-xs text-slate-600">—</p>
+        <form
+          id="form-project-contribution"
+          class="space-y-3"
+          onsubmit="DoxtehadApp.saveProjectContribution(event)"
+        >
+          <input id="contrib-proj-id" type="hidden" />
+          <input
+            id="contrib-amount"
+            type="number"
+            step="0.01"
+            min="0.01"
+            placeholder="Montant à ajouter ($)"
+            required
+            class="w-full p-2 border border-slate-300 rounded-lg text-xs"
+          />
+          <div class="flex space-x-2">
+            <button
+              type="submit"
+              class="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold py-2 rounded-lg transition"
+            >
+              Alimenter
+            </button>
+            <button
+              type="button"
+              onclick="DoxtehadApp.closeModal('modal-project-contribution')"
+              class="flex-1 bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-semibold py-2 rounded-lg transition"
+            >
+              Annuler
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
-  </div>
 
-  <!-- JS MODULES -->
-  <script src="./js/crypto.js"></script>
-  <script src="./js/storage.js"></script>
-  <script src="./js/app.js"></script>
-
-</body>
+    <!-- JS MODULES -->
+    <script type="importmap">
+      {
+        "imports": {
+          "@supabase/supabase-js": "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.0/+esm"
+        }
+      }
+    </script>
+    <script src="./js/crypto.js" type="module"></script>
+    <script src="./js/db.js" type="module"></script>
+    <script src="./js/app.js" type="module"></script>
+  </body>
 </html>

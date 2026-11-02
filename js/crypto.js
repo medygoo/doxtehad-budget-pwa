@@ -4,10 +4,11 @@
    - SHA-256 + sel aléatoire (via WebCrypto API)
    - Détection et migration de l'ancien hash faible
    - Rate limiting des tentatives de connexion
-   ============================================================ */
+    ============================================================ */
 
-(function (global) {
-  'use strict';
+  // ============================================================
+  // CRYPTO MODULE — Sécurisation du mot de passe
+  // ============================================================
 
   const PBKDF2_ITERATIONS = 100000;
   const SALT_BYTES = 16;
@@ -75,7 +76,7 @@
         name: 'PBKDF2',
         salt: hexToBytes(saltHex),
         iterations: iterations || PBKDF2_ITERATIONS,
-        hash: 'SHA-256'
+        hash: 'SHA-256',
       },
       passwordKey,
       256
@@ -112,7 +113,7 @@
       const computed = legacyHash(password);
       return {
         valid: computed === storedHash,
-        needsMigration: computed === storedHash
+        needsMigration: computed === storedHash,
       };
     }
 
@@ -136,7 +137,7 @@
       // Comparaison à temps constant (protection timing attack)
       return {
         valid: timingSafeEqual(computed, expectedHash),
-        needsMigration: false
+        needsMigration: false,
       };
     } catch (err) {
       console.error('[Crypto] Erreur dérivation:', err);
@@ -173,7 +174,7 @@
       return {
         attempts: parsed.attempts || 0,
         firstAttemptAt: parsed.firstAttemptAt || 0,
-        lockedUntil: parsed.lockedUntil || 0
+        lockedUntil: parsed.lockedUntil || 0,
       };
     } catch {
       return { attempts: 0, firstAttemptAt: 0, lockedUntil: 0 };
@@ -195,7 +196,7 @@
       return {
         locked: true,
         remainingMs: state.lockedUntil - now,
-        remainingSeconds: Math.ceil((state.lockedUntil - now) / 1000)
+        remainingSeconds: Math.ceil((state.lockedUntil - now) / 1000),
       };
     }
     return { locked: false, remainingMs: 0, remainingSeconds: 0 };
@@ -227,7 +228,7 @@
       attempts: state.attempts,
       maxAttempts: MAX_ATTEMPTS,
       lockedUntil: state.lockedUntil,
-      remaining: Math.max(0, MAX_ATTEMPTS - state.attempts)
+      remaining: Math.max(0, MAX_ATTEMPTS - state.attempts),
     };
   }
 
@@ -256,7 +257,7 @@
     return {
       valid: errors.length === 0,
       errors,
-      strength: computeStrength(password)
+      strength: computeStrength(password),
     };
   }
 
@@ -276,7 +277,7 @@
   // ============================================================
   // Export du module
   // ============================================================
-  global.DoxtehadCrypto = {
+  export default {
     createHash,
     verifyHash,
     validatePasswordStrength,
@@ -287,6 +288,5 @@
     recordFailedAttempt,
     resetRateLimit,
     MAX_ATTEMPTS,
-    LOCKOUT_DURATION_MS
+    LOCKOUT_DURATION_MS,
   };
-})(window);
