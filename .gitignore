@@ -21,3 +21,6 @@ Thumbs.db
 .dev.vars
 *.bak
 *.tmp
+
+live-*.png
+preview-*.png
