@@ -280,7 +280,17 @@ async function handleSignUp(e) {
   try {
     const { user, error } = await auth.signup(email, password);
     if (error) {
-      showToast("Erreur d'inscription : " + error, 'error');
+      if (error.includes('rate limit')) {
+        showToast(
+          "Serveur d'inscription temporairement saturé (quota emails atteint). Réessayez dans ~1 heure.",
+          'warning',
+          9000
+        );
+      } else if (error.includes('already registered') || error.toLowerCase().includes('already exists')) {
+        showToast('Ce compte existe déjà. Utilisez la connexion.', 'info');
+      } else {
+        showToast("Erreur d'inscription : " + error, 'error');
+      }
       return;
     }
     if (user) {
