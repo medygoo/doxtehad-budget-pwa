@@ -286,7 +286,10 @@ async function handleSignUp(e) {
           'warning',
           9000
         );
-      } else if (error.includes('already registered') || error.toLowerCase().includes('already exists')) {
+      } else if (
+        error.includes('already registered') ||
+        error.toLowerCase().includes('already exists')
+      ) {
         showToast('Ce compte existe déjà. Utilisez la connexion.', 'info');
       } else {
         showToast("Erreur d'inscription : " + error, 'error');
@@ -716,11 +719,11 @@ function renderAll() {
     .filter((o) => o.type === 'Épargne')
     .reduce((s, o) => s + parseFloat(o.amount || 0), 0);
 
-  // Dashboard KPIs
-  setElementText('kpi-revenus', formatCurrency(totalRevenus));
-  setElementText('kpi-depenses', formatCurrency(totalDepenses));
-  setElementText('kpi-projets', formatCurrency(totalProjetsOps));
-  setElementText('kpi-epargne', formatCurrency(totalEpargneOps));
+  // Dashboard KPIs (comptage animé, respect prefers-reduced-motion)
+  animateKpiValue('kpi-revenus', totalRevenus);
+  animateKpiValue('kpi-depenses', totalDepenses);
+  animateKpiValue('kpi-projets', totalProjetsOps);
+  animateKpiValue('kpi-epargne', totalEpargneOps);
 
   // Pourcentages relatifs aux revenus
   const depPct = totalRevenus > 0 ? (totalDepenses / totalRevenus) * 100 : 0;
@@ -803,6 +806,38 @@ function formatCurrency(val) {
 function setElementText(id, text) {
   const el = document.getElementById(id);
   if (el) el.innerText = text;
+}
+
+/**
+ * Comptage animé d'une valeur KPI (600ms ease-out).
+ * Respecte prefers-reduced-motion : pose directe si l'utilisateur le demande.
+ */
+const kpiLastValues = {};
+function animateKpiValue(id, targetVal) {
+  const el = document.getElementById(id);
+  if (!el) return;
+
+  const reduced =
+    window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const from = kpiLastValues[id] ?? 0;
+  kpiLastValues[id] = targetVal;
+
+  if (reduced || from === targetVal) {
+    el.innerText = formatCurrency(targetVal);
+    return;
+  }
+
+  const duration = 600;
+  const start = performance.now();
+  if (el._kpiRaf) cancelAnimationFrame(el._kpiRaf);
+  const step = (now) => {
+    const t = Math.min(1, (now - start) / duration);
+    const eased = 1 - Math.pow(1 - t, 3); // exponential-ish ease-out
+    const current = from + (targetVal - from) * eased;
+    el.innerText = formatCurrency(current);
+    if (t < 1) el._kpiRaf = requestAnimationFrame(step);
+  };
+  el._kpiRaf = requestAnimationFrame(step);
 }
 
 function setElementStyleWidth(id, width) {

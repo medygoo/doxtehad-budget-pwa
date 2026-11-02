@@ -101,6 +101,12 @@ body {
 .gap-2 {
   gap: 0.5rem;
 }
+.gap-1\.5 {
+  gap: 0.375rem;
+}
+.items-stretch {
+  align-items: stretch;
+}
 .gap-3 {
   gap: 0.75rem;
 }
@@ -345,10 +351,10 @@ body {
 
 /* Typographie */
 .text-\[10px\] {
-  font-size: 10px;
+  font-size: 12px;
 }
 .text-\[11px\] {
-  font-size: 11px;
+  font-size: 12px;
 }
 .text-xs {
   font-size: 0.75rem;
@@ -567,7 +573,7 @@ body {
   color: #fcd34d;
 }
 .text-amber-600 {
-  color: #d97706;
+  color: #b45309;
 }
 .text-amber-700 {
   color: #b45309;
@@ -809,6 +815,222 @@ body {
 }
 .hover\:underline:hover {
   text-decoration: underline;
+}
+
+/* ============================================================
+   HERO D'AUTHENTIFICATION — écran d'accueil DOXTEHAD
+   Animations GPU-friendly, respect de prefers-reduced-motion
+   ============================================================ */
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+.pb-2 {
+  padding-bottom: 0.5rem;
+}
+
+.font-extrabold {
+  font-weight: 800;
+}
+
+.tracking-tight {
+  letter-spacing: -0.02em;
+}
+
+.hero-mark svg {
+  display: block;
+  filter: drop-shadow(0 10px 18px rgba(10, 37, 64, 0.28));
+}
+
+.hero-mark-bg {
+  fill: #0a2540;
+}
+
+.hero-title {
+  color: #0a2540;
+}
+
+.hero-slogan {
+  color: #3b5a7a;
+}
+
+.hero-rule-line {
+  color: #3b5a7a;
+  letter-spacing: 0.01em;
+}
+
+.num-dep {
+  color: #0a2540;
+}
+
+.num-proj {
+  color: #1d4ed8;
+}
+
+.num-epa {
+  color: #b45309;
+}
+
+.hero-rule {
+  background: #eef2f7;
+  padding: 3px;
+}
+
+.rule-seg {
+  border-radius: 9999px;
+  transform-origin: left center;
+}
+
+.rule-dep {
+  background: linear-gradient(90deg, #e11d48, #fb7185);
+}
+
+.rule-proj {
+  background: linear-gradient(90deg, #1d4ed8, #60a5fa);
+}
+
+.rule-epa {
+  background: linear-gradient(90deg, #d97706, #fbbf24);
+}
+
+/* --- Chorégraphie d'entrée (une seule séquence authored) --- */
+#modal-auth-supabase:not(.hidden) .hero-mark {
+  animation: hero-mark-in 700ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+#modal-auth-supabase:not(.hidden) .hero-title {
+  animation: hero-rise 650ms cubic-bezier(0.16, 1, 0.3, 1) 140ms both;
+}
+
+#modal-auth-supabase:not(.hidden) .hero-slogan {
+  animation: hero-rise 650ms cubic-bezier(0.16, 1, 0.3, 1) 260ms both;
+}
+
+#modal-auth-supabase:not(.hidden) .hero-rule-line {
+  animation: hero-rise 650ms cubic-bezier(0.16, 1, 0.3, 1) 340ms both;
+}
+
+#modal-auth-supabase:not(.hidden) .hero-rule .rule-seg {
+  animation: rule-grow 900ms cubic-bezier(0.16, 1, 0.3, 1) 400ms both;
+}
+
+#modal-auth-supabase:not(.hidden) .hero-points {
+  animation: hero-rise 600ms cubic-bezier(0.16, 1, 0.3, 1) 620ms both;
+}
+
+#modal-auth-supabase:not(.hidden) form:not(.hidden) {
+  animation: hero-rise 550ms cubic-bezier(0.16, 1, 0.3, 1) 180ms both;
+}
+
+@keyframes hero-mark-in {
+  from {
+    opacity: 0;
+    transform: translateY(-14px) scale(0.82);
+    filter: blur(6px) drop-shadow(0 10px 18px rgba(10, 37, 64, 0.28));
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0) drop-shadow(0 10px 18px rgba(10, 37, 64, 0.28));
+  }
+}
+
+@keyframes hero-rise {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes rule-grow {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+/* Respiration lente et discrète du logo une fois posé */
+#modal-auth-supabase:not(.hidden) .hero-mark svg {
+  animation: mark-breathe 5.5s ease-in-out 1.4s infinite;
+}
+
+@keyframes mark-breathe {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-2px) scale(1.015);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #modal-auth-supabase:not(.hidden) .hero-mark,
+  #modal-auth-supabase:not(.hidden) .hero-title,
+  #modal-auth-supabase:not(.hidden) .hero-slogan,
+  #modal-auth-supabase:not(.hidden) .hero-rule-line,
+  #modal-auth-supabase:not(.hidden) .hero-rule .rule-seg,
+  #modal-auth-supabase:not(.hidden) .hero-points,
+  #modal-auth-supabase:not(.hidden) form:not(.hidden),
+  #modal-auth-supabase:not(.hidden) .hero-mark svg {
+    animation: none !important;
+  }
+}
+
+/* ============================================================
+   KPI & TRANSITIONS APP — micro-interactions Operate
+   ============================================================ */
+
+.kpi-value {
+  font-variant-numeric: tabular-nums;
+}
+
+.tab-btn {
+  transition:
+    background-color 160ms ease,
+    color 160ms ease;
+}
+
+main section > div {
+  transition: box-shadow 180ms ease;
+}
+
+main section > div:hover {
+  box-shadow:
+    0 1px 2px rgba(10, 37, 64, 0.06),
+    0 8px 20px -6px rgba(10, 37, 64, 0.12);
+}
+
+/* Focus visible cohérent pour tout l'app */
+:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.hero-points {
+  flex-wrap: wrap;
+}
+
+.hero-points .tick-icon {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
 }
 
 /* PWA specifiques */
