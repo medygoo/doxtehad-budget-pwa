@@ -11,7 +11,9 @@ import { TABLES } from './db.js';
  * @param {Function} onSessionChanged Callback appelé quand la session change.
  */
 export const initializeAuth = (onSessionChanged) => {
-  const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+  const {
+    data: { subscription },
+  } = supabase.auth.onAuthStateChange(async (event, session) => {
     console.log('[Auth] Événement:', event, session?.user?.email);
     if (typeof onSessionChanged === 'function') {
       try {
@@ -28,7 +30,9 @@ export const initializeAuth = (onSessionChanged) => {
  * Vérifie s'il existe une session active.
  */
 export const hasSession = async () => {
-  const { data: { session } } = await supabase.auth.getSession();
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
   return !!session;
 };
 
@@ -36,7 +40,9 @@ export const hasSession = async () => {
  * Obtenir l'utilisateur connecté.
  */
 export const getCurrentUser = async () => {
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   return user;
 };
 
@@ -129,15 +135,13 @@ export const resetPassword = async (email) => {
  * @param {string} userId
  */
 const createProfile = async (userId) => {
-  const { error } = await supabase
-    .from(TABLES.PROFILES)
-    .insert({
-      id: userId,
-      full_name: '',
-      currency: 'XOF',
-      locale: 'fr-FR',
-      budget_rules: { depensesMax: 75, projetsMax: 15, epargneMin: 10 },
-    });
+  const { error } = await supabase.from(TABLES.PROFILES).insert({
+    id: userId,
+    full_name: '',
+    currency: 'XOF',
+    locale: 'fr-FR',
+    budget_rules: { depensesMax: 75, projetsMax: 15, epargneMin: 10 },
+  });
   if (error) throw error;
 };
 

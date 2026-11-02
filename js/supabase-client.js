@@ -5,16 +5,18 @@
 
 import { createClient } from '@supabase/supabase-js';
 
-const SUPABASE_URL = (typeof import.meta !== 'undefined' && import.meta.env)
-  ? import.meta.env.VITE_SUPABASE_URL
-  : document.currentScript?.dataset?.url
-    ? document.currentScript.dataset.url
-    : 'https://ticglpmrwjpmvlqfteuu.supabase.co';
-const SUPABASE_ANON_KEY = (typeof import.meta !== 'undefined' && import.meta.env)
-  ? import.meta.env.VITE_SUPABASE_ANON_KEY
-  : document.currentScript?.dataset?.key
-    ? document.currentScript.dataset.key
-    : 'sb_publishable_9ihKn4enPO4btff0YqPr7g_kryCGvhr';
+const SUPABASE_URL =
+  typeof import.meta !== 'undefined' && import.meta.env
+    ? import.meta.env.VITE_SUPABASE_URL
+    : document.currentScript?.dataset?.url
+      ? document.currentScript.dataset.url
+      : 'https://ticglpmrwjpmvlqfteuu.supabase.co';
+const SUPABASE_ANON_KEY =
+  typeof import.meta !== 'undefined' && import.meta.env
+    ? import.meta.env.VITE_SUPABASE_ANON_KEY
+    : document.currentScript?.dataset?.key
+      ? document.currentScript.dataset.key
+      : 'sb_publishable_9ihKn4enPO4btff0YqPr7g_kryCGvhr';
 
 /**
  * Client Supabase principal (avec RLS — permissions par utilisateur)
@@ -40,7 +42,7 @@ export const createAdminClient = () => {
   const serviceKey = import.meta.env.VITE_SUPABASE_SERVICE_ROLE_KEY;
   if (!serviceKey) {
     throw new Error(
-      'VITE_SUPABASE_SERVICE_ROLE_KEY n\'est pas défini. Ne jamais l\'exposer dans le frontend.'
+      "VITE_SUPABASE_SERVICE_ROLE_KEY n'est pas défini. Ne jamais l'exposer dans le frontend."
     );
   }
   return createClient(SUPABASE_URL, serviceKey, {
@@ -54,7 +56,10 @@ export const createAdminClient = () => {
  */
 export const checkConnection = async () => {
   try {
-    const { data, error } = await supabase.from('operations').select('id', { count: 'exact' }).limit(0);
+    const { data, error } = await supabase
+      .from('operations')
+      .select('id', { count: 'exact' })
+      .limit(0);
     if (error) {
       return { ok: false, error: error.message };
     }
@@ -68,7 +73,9 @@ export const checkConnection = async () => {
  * Obtient l'utilisateur authentifié actuel.
  */
 export const getCurrentUser = async () => {
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   return user;
 };
 

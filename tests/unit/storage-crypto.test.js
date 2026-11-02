@@ -148,10 +148,7 @@ describe('DoxtehadCrypto — hash et vérification', () => {
 
     // crypto.js est désormais un module ES : on convertit l'export default en global
     // pour conserver la mécanique d'injection du test.
-    const wrappedSrc = cryptoSrc.replace(
-      /export\s+default\s+\{/,
-      'window.DoxtehadCrypto = {'
-    );
+    const wrappedSrc = cryptoSrc.replace(/export\s+default\s+\{/, 'window.DoxtehadCrypto = {');
     const fn = new Function(
       'window',
       'localStorage',

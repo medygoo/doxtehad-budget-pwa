@@ -121,7 +121,11 @@ export const createOperation = async (operation) => {
 
   if (isOnline()) {
     try {
-      const { data, error } = await supabase.from(TABLES.OPERATIONS).insert(newOp).select().single();
+      const { data, error } = await supabase
+        .from(TABLES.OPERATIONS)
+        .insert(newOp)
+        .select()
+        .single();
       if (error) throw error;
       saveOfflineCache({ ...loadOfflineCache(), operations: [], updatedAt: Date.now() });
       return data;
@@ -242,7 +246,11 @@ export const createProject = async (project) => {
 
   if (isOnline()) {
     try {
-      const { data, error } = await supabase.from(TABLES.PROJECTS).insert(newProject).select().single();
+      const { data, error } = await supabase
+        .from(TABLES.PROJECTS)
+        .insert(newProject)
+        .select()
+        .single();
       if (error) throw error;
       saveOfflineCache({ ...loadOfflineCache(), projects: [], updatedAt: Date.now() });
       return data;

@@ -36,9 +36,12 @@
       class="fixed inset-0 bg-slate-900/80 flex items-center justify-center z-50 hidden"
     >
       <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4 p-8 space-y-4">
-        <h2 id="auth-setup-heading" class="text-xl font-bold text-slate-800">Authentification DOXTEHAD</h2>
+        <h2 id="auth-setup-heading" class="text-xl font-bold text-slate-800">
+          Authentification DOXTEHAD
+        </h2>
         <p id="auth-setup-subtext" class="text-xs text-slate-500 leading-relaxed">
-          Connexion sécurisée par Supabase. Vos données sont chiffrées et synchronisées automatiquement.
+          Connexion sécurisée par Supabase. Vos données sont chiffrées et synchronisées
+          automatiquement.
         </p>
 
         <!-- Formulaire CONNEXION -->
@@ -51,14 +54,28 @@
             autocomplete="email"
             class="w-full p-2.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-400"
           />
-          <input
-            id="login-password"
-            type="password"
-            placeholder="Mot de passe"
-            required
-            autocomplete="current-password"
-            class="w-full p-2.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-400"
-          />
+          <div class="relative">
+            <input
+              id="login-password"
+              type="password"
+              placeholder="Mot de passe"
+              required
+              autocomplete="current-password"
+              class="w-full p-2.5 pr-10 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-400"
+            />
+            <button
+              type="button"
+              id="btn-toggle-login-password"
+              onclick="
+                DoxtehadApp.togglePasswordVisibility('login-password', 'btn-toggle-login-password')
+              "
+              class="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+              aria-label="Afficher le mot de passe"
+              title="Afficher"
+            >
+              👁
+            </button>
+          </div>
           <button
             type="submit"
             class="w-full bg-navy-800 hover:bg-navy-900 text-white font-semibold text-sm py-2.5 rounded-lg transition"
@@ -67,14 +84,38 @@
           </button>
           <p class="text-xs text-center text-slate-600">
             Pas encore de compte ?
-            <a href="#" onclick="event.preventDefault(); document.getElementById('form-auth-signup').classList.remove('hidden'); document.getElementById('form-auth-login').classList.add('hidden'); return false;" class="text-blue-600 hover:underline">Créer un compte</a>
+            <a
+              href="#"
+              onclick="
+                event.preventDefault();
+                document.getElementById('form-auth-signup').classList.remove('hidden');
+                document.getElementById('form-auth-login').classList.add('hidden');
+                return false;
+              "
+              class="text-blue-600 hover:underline"
+              >Créer un compte</a
+            >
             ·
-            <a href="#" onclick="event.preventDefault(); document.getElementById('form-auth-login').classList.add('hidden'); document.getElementById('form-auth-forgot').classList.remove('hidden'); return false;" class="text-blue-600 hover:underline">Mot de passe oublié ?</a>
+            <a
+              href="#"
+              onclick="
+                event.preventDefault();
+                document.getElementById('form-auth-login').classList.add('hidden');
+                document.getElementById('form-auth-forgot').classList.remove('hidden');
+                return false;
+              "
+              class="text-blue-600 hover:underline"
+              >Mot de passe oublié ?</a
+            >
           </p>
         </form>
 
         <!-- Formulaire INSCRIPTION -->
-        <form id="form-auth-signup" class="space-y-3 hidden" onsubmit="DoxtehadApp.handleSignUp(event)">
+        <form
+          id="form-auth-signup"
+          class="space-y-3 hidden"
+          onsubmit="DoxtehadApp.handleSignUp(event)"
+        >
           <input
             id="signup-email"
             type="email"
@@ -83,24 +124,58 @@
             autocomplete="email"
             class="w-full p-2.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-400"
           />
-          <input
-            id="signup-password"
-            type="password"
-            placeholder="Mot de passe (8+ caractères)"
-            required
-            autocomplete="new-password"
-            minlength="8"
-            class="w-full p-2.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-400"
-          />
-          <input
-            id="signup-password-confirm"
-            type="password"
-            placeholder="Confirmer le mot de passe"
-            required
-            autocomplete="new-password"
-            minlength="8"
-            class="w-full p-2.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-400"
-          />
+          <div class="relative">
+            <input
+              id="signup-password"
+              type="password"
+              placeholder="Mot de passe (8+ caractères)"
+              required
+              autocomplete="new-password"
+              minlength="8"
+              class="w-full p-2.5 pr-10 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-400"
+            />
+            <button
+              type="button"
+              id="btn-toggle-signup-password"
+              onclick="
+                DoxtehadApp.togglePasswordVisibility(
+                  'signup-password',
+                  'btn-toggle-signup-password'
+                )
+              "
+              class="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+              aria-label="Afficher le mot de passe"
+              title="Afficher"
+            >
+              👁
+            </button>
+          </div>
+          <div class="relative">
+            <input
+              id="signup-password-confirm"
+              type="password"
+              placeholder="Confirmer le mot de passe"
+              required
+              autocomplete="new-password"
+              minlength="8"
+              class="w-full p-2.5 pr-10 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-400"
+            />
+            <button
+              type="button"
+              id="btn-toggle-signup-password-confirm"
+              onclick="
+                DoxtehadApp.togglePasswordVisibility(
+                  'signup-password-confirm',
+                  'btn-toggle-signup-password-confirm'
+                )
+              "
+              class="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+              aria-label="Afficher le mot de passe"
+              title="Afficher"
+            >
+              👁
+            </button>
+          </div>
           <button
             type="submit"
             class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm py-2.5 rounded-lg transition"
@@ -109,14 +184,32 @@
           </button>
           <p class="text-xs text-center text-slate-600">
             Déjà un compte ?
-            <a href="#" onclick="event.preventDefault(); document.getElementById('form-auth-signup').classList.add('hidden'); document.getElementById('form-auth-login').classList.remove('hidden'); return false;" class="text-blue-600 hover:underline">Se connecter</a>
+            <a
+              href="#"
+              onclick="
+                event.preventDefault();
+                document.getElementById('form-auth-signup').classList.add('hidden');
+                document.getElementById('form-auth-login').classList.remove('hidden');
+                return false;
+              "
+              class="text-blue-600 hover:underline"
+              >Se connecter</a
+            >
           </p>
         </form>
 
         <!-- Formulaire RÉINITIALISATION -->
-        <form id="form-auth-forgot" class="space-y-3 hidden" onsubmit="event.preventDefault(); DoxtehadApp.resetPassword(document.getElementById('forgot-email').value);">
+        <form
+          id="form-auth-forgot"
+          class="space-y-3 hidden"
+          onsubmit="
+            event.preventDefault();
+            DoxtehadApp.resetPassword(document.getElementById('forgot-email').value);
+          "
+        >
           <p class="text-xs text-slate-600">
-            Entrez votre adresse email et nous vous enverrons un lien pour réinitialiser votre mot de passe.
+            Entrez votre adresse email et nous vous enverrons un lien pour réinitialiser votre mot
+            de passe.
           </p>
           <input
             id="forgot-email"
@@ -133,31 +226,77 @@
             Envoyer le lien de réinitialisation
           </button>
           <p class="text-xs text-center text-slate-600">
-            <a href="#" onclick="event.preventDefault(); document.getElementById('form-auth-forgot').classList.add('hidden'); document.getElementById('form-auth-login').classList.remove('hidden'); return false;" class="text-blue-600 hover:underline">Retour à la connexion</a>
+            <a
+              href="#"
+              onclick="
+                event.preventDefault();
+                document.getElementById('form-auth-forgot').classList.add('hidden');
+                document.getElementById('form-auth-login').classList.remove('hidden');
+                return false;
+              "
+              class="text-blue-600 hover:underline"
+              >Retour à la connexion</a
+            >
           </p>
         </form>
 
         <!-- Formulaire DÉVERROUILLAGE (mot de passe de chiffrement local) -->
-        <form id="form-auth-setup-pwd" class="space-y-3 hidden" onsubmit="DoxtehadApp.handleSetupPassword(event)">
+        <form
+          id="form-auth-setup-pwd"
+          class="space-y-3 hidden"
+          onsubmit="DoxtehadApp.handleSetupPassword(event)"
+        >
           <p class="text-xs text-slate-600">
-            Pour protéger vos données financières, créez un mot de passe de déverrouillage (chiffré localement).
+            Pour protéger vos données financières, créez un mot de passe de déverrouillage (chiffré
+            localement).
           </p>
-          <input
-            id="auth-setup-pwd"
-            type="password"
-            placeholder="Mot de passe de déverrouillage"
-            required
-            minlength="8"
-            class="w-full p-2.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-400"
-          />
-          <input
-            id="auth-setup-pwd-confirm"
-            type="password"
-            placeholder="Confirmer le mot de passe de déverrouillage"
-            required
-            minlength="8"
-            class="w-full p-2.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-400"
-          />
+          <div class="relative">
+            <input
+              id="auth-setup-pwd"
+              type="password"
+              placeholder="Mot de passe de déverrouillage"
+              required
+              minlength="8"
+              class="w-full p-2.5 pr-10 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-400"
+            />
+            <button
+              type="button"
+              id="btn-toggle-auth-setup-pwd"
+              onclick="
+                DoxtehadApp.togglePasswordVisibility('auth-setup-pwd', 'btn-toggle-auth-setup-pwd')
+              "
+              class="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+              aria-label="Afficher le mot de passe"
+              title="Afficher"
+            >
+              👁
+            </button>
+          </div>
+          <div class="relative">
+            <input
+              id="auth-setup-pwd-confirm"
+              type="password"
+              placeholder="Confirmer le mot de passe de déverrouillage"
+              required
+              minlength="8"
+              class="w-full p-2.5 pr-10 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-400"
+            />
+            <button
+              type="button"
+              id="btn-toggle-auth-setup-pwd-confirm"
+              onclick="
+                DoxtehadApp.togglePasswordVisibility(
+                  'auth-setup-pwd-confirm',
+                  'btn-toggle-auth-setup-pwd-confirm'
+                )
+              "
+              class="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+              aria-label="Afficher le mot de passe"
+              title="Afficher"
+            >
+              👁
+            </button>
+          </div>
           <button
             type="submit"
             class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm py-2.5 rounded-lg transition"
@@ -194,44 +333,46 @@
                 />
               </svg>
             </div>
-             <div>
-               <h1 class="text-sm font-bold">DOXTEHAD Budget v2.0</h1>
-               <p class="text-[10px] text-slate-300">Gestion Financière Structurée — Cloud Supabase</p>
-             </div>
-           </div>
-           <div class="flex items-center space-x-2">
-             <button
-               id="btn-pwa-install"
-               class="hidden px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-xs font-semibold rounded-lg transition"
-             >
-               📲 Installer
-             </button>
-             <div
-               id="auth-user-badge"
-               class="hidden px-3 py-1.5 bg-blue-600 rounded-lg text-xs font-semibold"
-             >
-               🔐 Connecté
-             </div>
-             <button
-               onclick="DoxtehadApp.handleLogout()"
-               class="p-2 hover:bg-navy-900 rounded-lg transition"
-               title="Déconnexion"
-             >
-               <svg
-                 class="w-5 h-5"
-                 fill="none"
-                 stroke="currentColor"
-                 viewBox="0 0 24 24"
-                 stroke-width="2"
-               >
-                 <path
-                   stroke-linecap="round"
-                   stroke-linejoin="round"
-                   d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
-                 />
-               </svg>
-             </button>
-           </div>
+            <div>
+              <h1 class="text-sm font-bold">DOXTEHAD Budget v2.0</h1>
+              <p class="text-[10px] text-slate-300">
+                Gestion Financière Structurée — Cloud Supabase
+              </p>
+            </div>
+          </div>
+          <div class="flex items-center space-x-2">
+            <button
+              id="btn-pwa-install"
+              class="hidden px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-xs font-semibold rounded-lg transition"
+            >
+              📲 Installer
+            </button>
+            <div
+              id="auth-user-badge"
+              class="hidden px-3 py-1.5 bg-blue-600 rounded-lg text-xs font-semibold"
+            >
+              🔐 Connecté
+            </div>
+            <button
+              onclick="DoxtehadApp.handleLogout()"
+              class="p-2 hover:bg-navy-900 rounded-lg transition"
+              title="Déconnexion"
+            >
+              <svg
+                class="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                stroke-width="2"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                />
+              </svg>
+            </button>
+          </div>
         </div>
 
         <!-- TABS NAVIGATION -->
@@ -695,29 +836,80 @@
                 class="space-y-2"
                 onsubmit="DoxtehadApp.handlePasswordChange(event)"
               >
-                <input
-                  id="change-old-pwd"
-                  type="password"
-                  placeholder="Mot de passe actuel"
-                  required
-                  class="w-full p-2 border border-slate-300 rounded-lg text-xs"
-                />
-                <input
-                  id="change-new-pwd"
-                  type="password"
-                  placeholder="Nouveau mot de passe (8+ car.)"
-                  required
-                  minlength="8"
-                  class="w-full p-2 border border-slate-300 rounded-lg text-xs"
-                />
-                <input
-                  id="change-confirm-pwd"
-                  type="password"
-                  placeholder="Confirmer"
-                  required
-                  minlength="8"
-                  class="w-full p-2 border border-slate-300 rounded-lg text-xs"
-                />
+                <div class="relative">
+                  <input
+                    id="change-old-pwd"
+                    type="password"
+                    placeholder="Mot de passe actuel"
+                    required
+                    class="w-full p-2 pr-9 border border-slate-300 rounded-lg text-xs"
+                  />
+                  <button
+                    type="button"
+                    id="btn-toggle-change-old-pwd"
+                    onclick="
+                      DoxtehadApp.togglePasswordVisibility(
+                        'change-old-pwd',
+                        'btn-toggle-change-old-pwd'
+                      )
+                    "
+                    class="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                    aria-label="Afficher le mot de passe"
+                    title="Afficher"
+                  >
+                    👁
+                  </button>
+                </div>
+                <div class="relative">
+                  <input
+                    id="change-new-pwd"
+                    type="password"
+                    placeholder="Nouveau mot de passe (8+ car.)"
+                    required
+                    minlength="8"
+                    class="w-full p-2 pr-9 border border-slate-300 rounded-lg text-xs"
+                  />
+                  <button
+                    type="button"
+                    id="btn-toggle-change-new-pwd"
+                    onclick="
+                      DoxtehadApp.togglePasswordVisibility(
+                        'change-new-pwd',
+                        'btn-toggle-change-new-pwd'
+                      )
+                    "
+                    class="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                    aria-label="Afficher le mot de passe"
+                    title="Afficher"
+                  >
+                    👁
+                  </button>
+                </div>
+                <div class="relative">
+                  <input
+                    id="change-confirm-pwd"
+                    type="password"
+                    placeholder="Confirmer"
+                    required
+                    minlength="8"
+                    class="w-full p-2 pr-9 border border-slate-300 rounded-lg text-xs"
+                  />
+                  <button
+                    type="button"
+                    id="btn-toggle-change-confirm-pwd"
+                    onclick="
+                      DoxtehadApp.togglePasswordVisibility(
+                        'change-confirm-pwd',
+                        'btn-toggle-change-confirm-pwd'
+                      )
+                    "
+                    class="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                    aria-label="Afficher le mot de passe"
+                    title="Afficher"
+                  >
+                    👁
+                  </button>
+                </div>
                 <button
                   type="submit"
                   class="w-full bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold py-2 rounded-lg transition"
